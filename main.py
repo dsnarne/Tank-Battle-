@@ -25,7 +25,7 @@ def redrawAll(app):
     if app.isControlsPage:
         # Draw the Controls page
         drawRect(0, 0, app.width, app.height, fill='white')  # Blank background
-        drawLabel('CONTROLS', app.width / 2, 50, size=50, bold=True, fill='black')
+        drawLabel('CONTROLS', app.width / 2, 50, size=45, bold=True, fill='black')
         drawLabel('1. Use WASD to move.', app.width / 2, 150, size=30, fill='black')
         drawLabel('2. Aim your mouse and press it to shoot.', app.width / 2, 200, size=30, fill='black')
         drawLabel('3. Avoid enemy tanks and destroy them!', app.width / 2, 250, size=30, fill='black')
