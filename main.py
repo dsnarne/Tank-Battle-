@@ -22,25 +22,33 @@ def onAppStart(app):
     app.isControlsPage = False
 
 def redrawAll(app):
-
-    drawLabel('Tank Battle!!!', app.width / 2, 100, size=100, bold=True, fill='black')
-    drawLabel('PRESS START AND THE CHALLENGE BEGINS', 
-              app.width / 2, 175, size=20, fill='gray')
-    
-    #Start button
-    drawRect(app.startBoxX, app.startBoxY, app.boxWidth, app.boxHeight, 
-             fill=app.startBoxColor, border='black')
-    drawLabel('START', app.startBoxX + app.boxWidth / 2, app.startBoxY + app.boxHeight / 2,
-              size=50, bold=True, fill=app.startTextColor)
-    
-    #Controls button
-    drawRect(app.controlsBoxX, app.controlsBoxY, app.boxWidth, app.boxHeight, 
-             fill=app.controlsBoxColor, border='black')
-    drawLabel('CONTROLS', app.controlsBoxX + app.boxWidth / 2, 
-              app.controlsBoxY + app.boxHeight / 2, size=35, bold=True, fill=app.controlsTextColor)
+    if app.isControlsPage:
+        # Draw the Controls page
+        drawRect(0, 0, app.width, app.height, fill='white')  # Blank background
+        drawLabel('CONTROLS', app.width / 2, 50, size=50, bold=True, fill='black')
+        drawLabel('1. Use arrow keys to move.', app.width / 2, 150, size=30, fill='black')
+        drawLabel('2. Press spacebar to shoot.', app.width / 2, 200, size=30, fill='black')
+        drawLabel('3. Avoid enemy tanks and destroy them!', app.width / 2, 250, size=30, fill='black')
+        drawLabel('Press ESC to return to the main menu.', app.width / 2, 350, size=20, fill='red')
+    else:
+        drawLabel('Tank Battle!!!', app.width / 2, 100, size=100, bold=True, fill='black')
+        drawLabel('PRESS START AND THE CHALLENGE BEGINS', 
+                app.width / 2, 175, size=20, fill='gray')
+        
+        #Start button
+        drawRect(app.startBoxX, app.startBoxY, app.boxWidth, app.boxHeight, 
+                fill=app.startBoxColor, border='black')
+        drawLabel('START', app.startBoxX + app.boxWidth / 2, app.startBoxY + app.boxHeight / 2,
+                size=50, bold=True, fill=app.startTextColor)
+        
+        #Controls button
+        drawRect(app.controlsBoxX, app.controlsBoxY, app.boxWidth, app.boxHeight, 
+                fill=app.controlsBoxColor, border='black')
+        drawLabel('CONTROLS', app.controlsBoxX + app.boxWidth / 2, 
+                app.controlsBoxY + app.boxHeight / 2, size=35, bold=True, fill=app.controlsTextColor)
 
 def onMouseMove(app, mouseX, mouseY):
-    #Start button
+    #Hover over start button
     if (app.startBoxX <= mouseX <= app.startBoxX + app.boxWidth and
         app.startBoxY <= mouseY <= app.startBoxY + app.boxHeight):
         app.isStartHovering = True
@@ -51,7 +59,7 @@ def onMouseMove(app, mouseX, mouseY):
         app.startBoxColor = 'blue'
         app.startTextColor = 'white'
 
-    #Controls button
+    #Hover over controls button
     if (app.controlsBoxX <= mouseX <= app.controlsBoxX + app.boxWidth and
         app.controlsBoxY <= mouseY <= app.controlsBoxY + app.boxHeight):
         app.isControlsHovering = True
@@ -61,6 +69,17 @@ def onMouseMove(app, mouseX, mouseY):
         app.isControlsHovering = False
         app.controlsBoxColor = 'green'
         app.controlsTextColor = 'white'
+
+def onMousePress(app, mouseX, mouseY):
+    if not app.isControlsPage:
+        #Check if the controls button clicked
+        if (app.controlsBoxX <= mouseX <= app.controlsBoxX + app.boxWidth and
+            app.controlsBoxY <= mouseY <= app.controlsBoxY + app.boxHeight):
+            app.isControlsPage = True
+    
+def onKeyPress(app, key):
+    if app.isControlsPage and key == 'escape':
+        app.isControlsPage = False
 
 def main():
     runApp(width=750, height=500)
