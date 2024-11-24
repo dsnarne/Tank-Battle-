@@ -4,7 +4,7 @@ def onAppStart(app):
     app.width = 750
     app.height = 500
     
-    #Starting screen box properties
+    # Starting screen box properties
     app.boxWidth = 200
     app.boxHeight = 100
     app.startBoxX = (app.width - app.boxWidth) / 2  
@@ -20,20 +20,30 @@ def onAppStart(app):
     app.isControlsHovering = False
     
     app.isControlsPage = False
+    
+    app.backgroundImagePath = '/Users/dhirennarne/Desktop/Src/Images/background.jpeg'
+    
+
+    app.isFlickerVisible = True  
+    app.flickerTimer = 0  
 
 def redrawAll(app):
+    drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height)
+    
     if app.isControlsPage:
-        # Draw the Controls page
+        #Draw the Controls page
         drawRect(0, 0, app.width, app.height, fill='white')  # Blank background
         drawLabel('CONTROLS', app.width / 2, 50, size=45, bold=True, fill='black')
         drawLabel('1. Use WASD to move.', app.width / 2, 150, size=30, fill='black')
-        drawLabel('2. Aim your mouse and press it to shoot.', app.width / 2, 200, size=30, fill='black')
+        drawLabel('2. Aim your mouse and press space to shoot.', app.width / 2, 200, size=30, fill='black')
         drawLabel('3. Avoid enemy tanks and destroy them!', app.width / 2, 250, size=30, fill='black')
         drawLabel('Press ESC to return to the main menu.', app.width / 2, 350, size=20, fill='red')
     else:
         drawLabel('Tank Battle!!!', app.width / 2, 100, size=100, bold=True, fill='black')
-        drawLabel('PRESS START AND THE CHALLENGE BEGINS', 
-                app.width / 2, 175, size=20, fill='gray')
+        
+        if app.isFlickerVisible:
+            drawLabel('PRESS START AND THE CHALLENGE BEGINS', 
+                    app.width / 2, 175, size=30, fill='white', bold=True, border= 'black', borderWidth = 1)
         
         #Start button
         drawRect(app.startBoxX, app.startBoxY, app.boxWidth, app.boxHeight, 
@@ -46,6 +56,13 @@ def redrawAll(app):
                 fill=app.controlsBoxColor, border='black')
         drawLabel('CONTROLS', app.controlsBoxX + app.boxWidth / 2, 
                 app.controlsBoxY + app.boxHeight / 2, size=35, bold=True, fill=app.controlsTextColor)
+
+def onStep(app):
+    app.flickerTimer += 1
+
+    #Every 33 steps change visibility
+    if app.flickerTimer % 33 == 0:
+        app.isFlickerVisible = not app.isFlickerVisible
 
 def onMouseMove(app, mouseX, mouseY):
     #Hover over start button
@@ -72,11 +89,10 @@ def onMouseMove(app, mouseX, mouseY):
 
 def onMousePress(app, mouseX, mouseY):
     if not app.isControlsPage:
-        #Check if the controls button clicked
         if (app.controlsBoxX <= mouseX <= app.controlsBoxX + app.boxWidth and
             app.controlsBoxY <= mouseY <= app.controlsBoxY + app.boxHeight):
             app.isControlsPage = True
-    
+
 def onKeyPress(app, key):
     if app.isControlsPage and key == 'escape':
         app.isControlsPage = False

@@ -220,7 +220,7 @@ def onStep(app):
 
         if (projectile['x'] < 0 or projectile['x'] > app.width or
             projectile['y'] < 0 or projectile['y'] > app.height):
-            app.projectiles.remove(projectile)
+          app.projectiles.remove(projectile)
  
 def main():
     runApp(width=750, height=500)
