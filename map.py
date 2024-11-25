@@ -27,35 +27,41 @@ def onAppStart(app):
     app.enemyTankColor = 'red'
     app.enemyTurretColor = 'darkred'
     app.enemyTurretRadius = 15
-    app.enemyTankSpeed = 3
+    app.enemyTankSpeed = 1
     app.enemyTankAngle = 0
     app.enemyLastShotTime = 0
     
-
-    #Cannon properties
     app.cannonWidth = 30
     app.cannonHeight = 10
     app.cannonAngle = 0 
 
-    #Wall properties
     app.walls = [
-      [100, 100, 200, 20],  # Wall 1
-      [400, 200, 20, 150],  # Wall 2
-      [600, 300, 100, 20],  # Wall 3
-      [250, 400, 300, 20],  # Wall 4
+      [100, 100, 200, 20],  #Wall 1
+      [400, 200, 20, 150],  #Wall 2
+      [600, 300, 100, 20],  #Wall 3
+      [250, 400, 300, 20],  #Wall 4
     ]
 
-    #Projectiles
     app.projectiles = []
     app.lastShotTime = 0 
-    
     app.recticleRadius = 10
     app.mouseX = 0
     app.mouseY = 0
+    
+    app.gameOver = False
+    app.startTime = time.time()
+    app.fastestTime = None
 
+    
 def redrawAll(app):
     drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height) #if file path not working comment this out
-    
+    if app.gameOver:
+        drawLabel('GAME OVER', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='red')
+        drawLabel(f'Press R to Restart', app.width / 2, app.height / 2, size=20, fill='white')
+        if app.fastestTime:
+            drawLabel(f'Fastest Time: {app.fastestTime:.2f} seconds', app.width / 2, app.height / 2 + 40, size=20, fill='yellow')
+        return
+      
     drawTank(app)
     
     drawEnemyTank(app)
@@ -109,7 +115,7 @@ def drawCannon(app, centerX, centerY, color, isPlayer):
     else:
         dx = app.tankX - app.enemyTankX
         dy = app.tankY - app.enemyTankY
-        angle = math.atan2(dy, dx)  # Calculate the angle to the player
+        angle = math.atan2(dy, dx)  # Calculate the angle to the player tank
         halfHeight = app.cannonHeight / 2
 
     #Start of cannon connected to the circle's edge (turret center)
@@ -137,7 +143,7 @@ def drawEnemyTank(app):
     centerX = app.enemyTankX + app.enemyTankWidth / 2
     centerY = app.enemyTankY + app.enemyTankHeight / 2
 
-    # Calculate tank corners based on rotation
+    #Calculate tank corners based on rotation
     halfWidth = app.enemyTankWidth / 2
     halfHeight = app.enemyTankHeight / 2
     angle = app.enemyTankAngle
@@ -153,21 +159,21 @@ def drawEnemyTank(app):
          centerY - math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
     ]
 
-    # Draw enemy tank body as a rotated rectangle
+    #Draw enemy tank body as a rotated rectangle
     drawPolygon(corners[0][0], corners[0][1],
                 corners[1][0], corners[1][1],
                 corners[2][0], corners[2][1],
                 corners[3][0], corners[3][1],
                 fill=app.enemyTankColor, border='black')
 
-    # Draw the turret
+    #Draw the turret
     drawCircle(centerX, centerY, app.enemyTurretRadius, fill=app.enemyTurretColor, border='black')
 
-    # Draw the enemy cannon
+    #Draw the enemy cannon
     drawCannon(app, centerX, centerY, 'darkred', False)
 
 def moveEnemyTank(app):
-    # Calculate the angle between the enemy tank and the player tank
+    #Calculate the angle between the enemy tank and the player tank
     dx = app.tankX - app.enemyTankX
     dy = app.tankY - app.enemyTankY
     app.enemyTankAngle = math.atan2(dy, dx)  #Angle to the player
@@ -176,7 +182,7 @@ def moveEnemyTank(app):
     newX = app.enemyTankX + math.cos(app.enemyTankAngle) * moveSpeed
     newY = app.enemyTankY + math.sin(app.enemyTankAngle) * moveSpeed
 
-    # Check if the enemy tank will collide with any wall at the new position
+    #Check if the enemy tank will collide with any wall at the new position
     if not checkTankCollision(app, newX, newY, app.enemyTankWidth, app.enemyTankHeight):
         app.enemyTankX = newX
         app.enemyTankY = newY
@@ -196,6 +202,15 @@ def checkTankCollision(app, newX, newY, tankWidth, tankHeight):
 
     return False 
 
+def checkProjectileCollisionWithPlayer(app):
+    for projectile in app.projectiles:  
+        if (
+            app.tankX <= projectile['x'] <= app.tankX + app.tankWidth and
+            app.tankY <= projectile['y'] <= app.tankY + app.tankHeight
+        ):
+            return True
+    return False
+
 
 def isPlayerVisible(app):
     enemyX = app.enemyTankX + app.enemyTankWidth / 2
@@ -206,16 +221,14 @@ def isPlayerVisible(app):
     for wall in app.walls:
         wallX, wallY, wallW, wallH = wall
 
-        # Check if the line between the enemy and player intersects with any wall
+        #Check if the line between the enemy and player intersects with any wall
         if lineIntersectsRect(enemyX, enemyY, playerX, playerY, wallX, wallY, wallW, wallH):
             return False  # Player is behind a wall
 
-    return True  # Player is visible
+    return True  #Player is visible
 
 def lineIntersectsRect(x1, y1, x2, y2, rx, ry, rw, rh):
-    # Check for line intersection with a rectangle (basic algorithm)
-    # This would require implementing line-rectangle intersection logic.
-    # For simplicity, assume a basic check or library for geometric calculations is used here.
+  #work in progress used to make tank shoot only when player visible
     pass
 
 def enemyShoot(app):
@@ -225,10 +238,10 @@ def enemyShoot(app):
     if currentTime - app.enemyLastShotTime < 0.5:
         return
 
-    if isPlayerVisible(app):  # Only shoot if the player is visible
+    if isPlayerVisible(app):  #Only shoot if the player is visible (WORK IN PROGRESS)
         app.enemyLastShotTime = currentTime
 
-        # Spawn projectile toward the player
+        #Spawn projectile toward the player
         startX = app.enemyTankX + app.enemyTankWidth / 2
         startY = app.enemyTankY + app.enemyTankHeight / 2
         angle = app.enemyTankAngle
@@ -243,9 +256,12 @@ def enemyShoot(app):
             'bounces': 0
         })
 
+def onKeyPress(app, key):
+  if app.gameOver and key == 'r':
+    onAppStart(app)
 
 def onKeyHold(app, keys):
-    dx, dy = 0, 0 #Movement vector
+    dx, dy = 0, 0
 
     if 'w' in keys: 
         dy -= app.tankSpeed
@@ -287,11 +303,11 @@ def spawnProjectile(app):
     #Calculate starting position of projectile at the turret's edge
     turretCenterX = app.tankX + app.tankWidth / 2
     turretCenterY = app.tankY + app.tankHeight / 2
-    startX = turretCenterX + math.cos(app.cannonAngle) * (app.turretRadius + 5)
-    startY = turretCenterY + math.sin(app.cannonAngle) * (app.turretRadius + 5)
+    startX = turretCenterX + math.cos(app.cannonAngle) * (app.turretRadius + 25a)
+    startY = turretCenterY + math.sin(app.cannonAngle) * (app.turretRadius + 25)
 
  
-    angle = app.cannonAngle    #Cannon angle as the direction
+    angle = app.cannonAngle #Cannon angle as the direction
 
     #Add projectiles to list
     app.projectiles.append({
@@ -313,17 +329,45 @@ def checkCollision(app, newX, newY):
             return True
     return False
 
+def checkTankCollisionWithPlayer(app):
+  enemyCenterX = app.enemyTankX + app.enemyTankWidth / 2
+  enemyCenterY = app.enemyTankY + app.enemyTankHeight / 2
+  playerCenterX = app.tankX + app.tankWidth / 2
+  playerCenterY = app.tankY + app.tankHeight / 2
+  
+  distance = math.sqrt((enemyCenterX - playerCenterX) ** 2 + (enemyCenterY - playerCenterY) ** 2)
+  return distance < (app.tankWidth + app.enemyTankWidth) / 2
+
+
 def onMouseMove(app, mouseX, mouseY):
     turretCenterX = app.tankX + app.tankWidth / 2
     turretCenterY = app.tankY + app.tankHeight / 2
-    dx = mouseX - turretCenterX  # Difference between mouse and turret center X
-    dy = mouseY - turretCenterY  # Difference between mouse and turret center Y
-    app.cannonAngle = math.atan2(dy, dx)  # Get the angle using arctan2 function
-    app.mouseX = mouseX  # Store the mouse position
-    app.mouseY = mouseY  # Store the mouse position
+    dx = mouseX - turretCenterX  #Difference between mouse and turret center X
+    dy = mouseY - turretCenterY  #Difference between mouse and turret center Y
+    app.cannonAngle = math.atan2(dy, dx)  #Get the angle using arctan2 function
+    app.mouseX = mouseX  
+    app.mouseY = mouseY  
 
 
 def onStep(app):
+    if app.gameOver:
+        return  # Stop game logic when game is over
+    
+    moveEnemyTank(app)
+    enemyShoot(app)
+    
+    # Check if the enemy tank collides with the player tank
+    if checkTankCollisionWithPlayer(app):
+        app.gameOver = True
+        elapsedTime = time.time() - app.startTime
+        if app.fastestTime is None or elapsedTime < app.fastestTime:
+            app.fastestTime = elapsedTime  # Update fastest time
+    if checkProjectileCollisionWithPlayer(app):
+        app.gameOver = True
+        elapsedTime = time.time() - app.startTime
+        if app.fastestTime is None or elapsedTime < app.fastestTime:
+            app.fastestTime = elapsedTime    
+            
     moveEnemyTank(app)
     enemyShoot(app)
     
@@ -340,7 +384,7 @@ def onStep(app):
                 #Adjust the direction of the projectile after hitting the wall
                 projectile['dy'] = -projectile['dy']
                 projectile['bounces'] += 1
-                new_y = projectile['y'] + projectile['dy']  # Correct the new position after bounce
+                new_y = projectile['y'] + projectile['dy']
                 break 
 
             #Check if projectile is colliding with a wall vertically
@@ -359,12 +403,11 @@ def onStep(app):
         if projectile['bounces'] >= 2:
             app.projectiles.remove(projectile)
             continue
-
         if (projectile['x'] < 0 or projectile['x'] > app.width or
             projectile['y'] < 0 or projectile['y'] > app.height):
           app.projectiles.remove(projectile)
  
 def main():
-    runApp(width=750, height=500)
+  runApp(width=750, height=500)
 
 main()
