@@ -49,18 +49,25 @@ def onAppStart(app):
     app.mouseY = 0
     
     app.gameOver = False
+    app.gameWon = False
     app.startTime = time.time()
     app.fastestTime = None
 
     
 def redrawAll(app):
     drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height) #if file path not working comment this out
+    
+    
     if app.gameOver:
+      if app.gameWon:
+        drawLabel('YOU WIN!', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='green')
+      else:
         drawLabel('GAME OVER', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='red')
-        drawLabel(f'Press R to Restart', app.width / 2, app.height / 2, size=20, fill='white')
-        if app.fastestTime:
-            drawLabel(f'Fastest Time: {app.fastestTime:.2f} seconds', app.width / 2, app.height / 2 + 40, size=20, fill='yellow')
-        return
+        
+      drawLabel(f'Press R to Restart', app.width / 2, app.height / 2, size=20, fill='white')
+      if app.fastestTime:
+          drawLabel(f'Fastest Time: {app.fastestTime:.2f} seconds', app.width / 2, app.height / 2 + 40, size=20, fill='yellow')
+      return
       
     drawTank(app)
     
@@ -238,10 +245,10 @@ def enemyShoot(app):
     if currentTime - app.enemyLastShotTime < 0.5:
         return
 
-    if isPlayerVisible(app):  #Only shoot if the player is visible (WORK IN PROGRESS)
+    if isPlayerVisible(app):  # Only shoot if the player is visible (WORK IN PROGRESS)
         app.enemyLastShotTime = currentTime
 
-        #Spawn projectile toward the player
+        # Spawn projectile toward the player
         startX = app.enemyTankX + app.enemyTankWidth / 2
         startY = app.enemyTankY + app.enemyTankHeight / 2
         angle = app.enemyTankAngle
@@ -253,8 +260,10 @@ def enemyShoot(app):
             'angle': angle,
             'dx': math.cos(angle) * 10,
             'dy': math.sin(angle) * 10,
-            'bounces': 0
+            'bounces': 0,
+            'source': 'enemy'  # Indicate that this is an enemy projectile
         })
+
 
 def onKeyPress(app, key):
   if app.gameOver and key == 'r':
@@ -291,34 +300,35 @@ def onKeyHold(app, keys):
 def spawnProjectile(app):
     currentTime = time.time()
 
-    #Check if 1/4 second passed since last shot
+    # Check if 1/4 second passed since last shot
     if currentTime - app.lastShotTime < 0.25:
         return  
 
     app.lastShotTime = currentTime
 
     if len(app.projectiles) >= 5:
-        return  #Don't spawn more than 5 projectiles
+        return  # Don't spawn more than 5 projectiles
 
-    #Calculate starting position of projectile at the turret's edge
+    # Calculate starting position of projectile at the turret's edge
     turretCenterX = app.tankX + app.tankWidth / 2
     turretCenterY = app.tankY + app.tankHeight / 2
-    startX = turretCenterX + math.cos(app.cannonAngle) * (app.turretRadius + 25a)
+    startX = turretCenterX + math.cos(app.cannonAngle) * (app.turretRadius + 25)
     startY = turretCenterY + math.sin(app.cannonAngle) * (app.turretRadius + 25)
 
- 
-    angle = app.cannonAngle #Cannon angle as the direction
+    angle = app.cannonAngle  # Cannon angle as the direction
 
-    #Add projectiles to list
+    # Add projectiles to list
     app.projectiles.append({
         'x': startX,
         'y': startY,
         'radius': 5,
         'angle': angle,
-        'dx': math.cos(angle) * 10, #Set dx and dy based on angle
+        'dx': math.cos(angle) * 10,  # Set dx and dy based on angle
         'dy': math.sin(angle) * 10,
-        'bounces': 0  #Count bounces
+        'bounces': 0,  # Count bounces
+        'source': 'player'  # Indicate that this is a player projectile
     })
+
 
 
 def checkCollision(app, newX, newY):
@@ -338,6 +348,20 @@ def checkTankCollisionWithPlayer(app):
   distance = math.sqrt((enemyCenterX - playerCenterX) ** 2 + (enemyCenterY - playerCenterY) ** 2)
   return distance < (app.tankWidth + app.enemyTankWidth) / 2
 
+def checkProjectileCollisionWithEnemy(app):
+    for projectile in app.projectiles:  
+        if projectile['source'] == 'player':  # Only check player's projectiles
+            enemyCenterX = app.enemyTankX + app.enemyTankWidth / 2
+            enemyCenterY = app.enemyTankY + app.enemyTankHeight / 2
+            
+            if (enemyCenterX - app.enemyTankWidth / 2 <= projectile['x'] <= enemyCenterX + app.enemyTankWidth / 2 and
+                enemyCenterY - app.enemyTankHeight / 2 <= projectile['y'] <= enemyCenterY + app.enemyTankHeight / 2):
+                return True
+    return False
+
+
+
+
 
 def onMouseMove(app, mouseX, mouseY):
     turretCenterX = app.tankX + app.tankWidth / 2
@@ -350,63 +374,73 @@ def onMouseMove(app, mouseX, mouseY):
 
 
 def onStep(app):
+    # Exit early if the game is over
     if app.gameOver:
-        return  # Stop game logic when game is over
+        return
     
+    # Game logic runs only if the game is not over or won
     moveEnemyTank(app)
     enemyShoot(app)
-    
+
     # Check if the enemy tank collides with the player tank
     if checkTankCollisionWithPlayer(app):
         app.gameOver = True
-        elapsedTime = time.time() - app.startTime
-        if app.fastestTime is None or elapsedTime < app.fastestTime:
-            app.fastestTime = elapsedTime  # Update fastest time
+        app.gameWon = False  # Player loses if enemy tank collides
+        updateFastestTime(app)
+        return  # No need to process further if the game is over
+
+    # Check if the player's projectile hits the enemy tank
+    if checkProjectileCollisionWithEnemy(app):
+        app.gameOver = True
+        app.gameWon = True  # Player wins if projectile hits the enemy
+        updateFastestTime(app)
+        return  # No need to process further if the game is over
+
+    # Check if the player is hit by a projectile
     if checkProjectileCollisionWithPlayer(app):
         app.gameOver = True
-        elapsedTime = time.time() - app.startTime
-        if app.fastestTime is None or elapsedTime < app.fastestTime:
-            app.fastestTime = elapsedTime    
-            
-    moveEnemyTank(app)
-    enemyShoot(app)
-    
+        app.gameWon = False  # Player loses if hit by projectile
+        updateFastestTime(app)
+        return  # No need to process further if the game is over
+
+    # Handle projectile movement and wall collisions
     for projectile in list(app.projectiles):
         new_x = projectile['x'] + projectile['dx']
         new_y = projectile['y'] + projectile['dy']
-        
+
+        # Handle wall collisions
         for wall in app.walls:
             wallX, wallY, wallW, wallH = wall
-
-            #Check if projectile is colliding with a wall horizontally 
+            
+            # Vertical wall hit
             if (wallX <= new_x <= wallX + wallW and
                 wallY - projectile['radius'] <= new_y <= wallY + wallH + projectile['radius']):
-                #Adjust the direction of the projectile after hitting the wall
-                projectile['dy'] = -projectile['dy']
+                projectile['dy'] = -projectile['dy']  # Reverse direction on vertical wall hit
                 projectile['bounces'] += 1
                 new_y = projectile['y'] + projectile['dy']
-                break 
+                break
 
-            #Check if projectile is colliding with a wall vertically
+            # Horizontal wall hit
             if (wallY <= new_y <= wallY + wallH and
                 wallX - projectile['radius'] <= new_x <= wallX + wallW + projectile['radius']):
-                #Adjust direction of the projectile after hitting the wall
-                projectile['dx'] = -projectile['dx']
+                projectile['dx'] = -projectile['dx']  # Reverse direction on horizontal wall hit
                 projectile['bounces'] += 1
                 new_x = projectile['x'] + projectile['dx']
-                break 
-              
+                break
+
+        # Update projectile position after potential collision adjustments
         projectile['x'] = new_x
         projectile['y'] = new_y
 
-        #Remove projectile if it bounces twice or off-screen
-        if projectile['bounces'] >= 2:
+        # Remove projectile if it bounces twice or goes off-screen
+        if projectile['bounces'] >= 2 or not (0 <= new_x <= app.width and 0 <= new_y <= app.height):
             app.projectiles.remove(projectile)
-            continue
-        if (projectile['x'] < 0 or projectile['x'] > app.width or
-            projectile['y'] < 0 or projectile['y'] > app.height):
-          app.projectiles.remove(projectile)
- 
+
+def updateFastestTime(app):
+    elapsedTime = time.time() - app.startTime
+    if app.fastestTime is None or elapsedTime < app.fastestTime:
+        app.fastestTime = elapsedTime
+
 def main():
   runApp(width=750, height=500)
 
