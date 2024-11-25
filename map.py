@@ -19,7 +19,7 @@ def onAppStart(app):
     app.tankSpeed = 5
     app.tankAngle = 0  #Angle in radians for tank rotation
 
-    # Cannon properties
+    #Cannon properties
     app.cannonWidth = 30
     app.cannonHeight = 10
     app.cannonAngle = 0 
@@ -35,6 +35,10 @@ def onAppStart(app):
     #Projectiles
     app.projectiles = []
     app.lastShotTime = 0 
+    
+    app.recticleRadius = 10
+    app.mouseX = 0
+    app.mouseY = 0
 
 def redrawAll(app):
     drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height)
@@ -47,11 +51,13 @@ def redrawAll(app):
     for wall in app.walls:
         drawRect(wall[0], wall[1], wall[2], wall[3], fill='bisque', border='burlyWood', borderWidth=3)
 
+    drawCircle(app.mouseX, app.mouseY, app.recticleRadius, fill='red')
+
 def drawTank(app):
     centerX = app.tankX + app.tankWidth / 2
     centerY = app.tankY + app.tankHeight / 2
 
-    #asCalculate tank corners based on rotation
+    #Calculate tank corners based on rotation
     halfWidth = app.tankWidth / 2
     halfHeight = app.tankHeight / 2
     angle = app.tankAngle
@@ -81,14 +87,14 @@ def drawTank(app):
     drawCannon(app, centerX, centerY)
 
 def drawCannon(app, centerX, centerY):
-    angle = app.cannonAngle
+    angle = app.cannonAngle  #Get the cannon's angle towards the mouse
     halfHeight = app.cannonHeight / 2
 
-    #Start of cannon connected to the circle's edge
+    #Start of cannon connected to the circle's edge (turret center)
     startX = centerX + math.cos(angle) * app.turretRadius
     startY = centerY + math.sin(angle) * app.turretRadius
 
-    #Corners relative to the cannon's rotation
+    #Calculate the cannon's four corners relative to its rotation
     corners = [
         (startX + math.cos(angle) * app.cannonWidth - math.sin(angle) * halfHeight,
          startY + math.sin(angle) * app.cannonWidth + math.cos(angle) * halfHeight),
@@ -98,15 +104,16 @@ def drawCannon(app, centerX, centerY):
         (startX + math.sin(angle) * halfHeight, startY - math.cos(angle) * halfHeight)
     ]
     
-    #Draw cannon as a polygon
+    #Draw the cannon as rectangle rotated in the direction of the cannon angle
     drawPolygon(corners[0][0], corners[0][1],
                 corners[1][0], corners[1][1],
                 corners[3][0], corners[3][1],
                 corners[2][0], corners[2][1],
                 fill=app.turretColor, border='black')
 
+
 def onKeyHold(app, keys):
-    dx, dy = 0, 0  #Movement vector
+    dx, dy = 0, 0 #Movement vector
 
     if 'w' in keys: 
         dy -= app.tankSpeed
@@ -117,7 +124,7 @@ def onKeyHold(app, keys):
     if 'd' in keys: 
         dx += app.tankSpeed
 
-    if dx != 0 or dy != 0:  #Update angle if there is movement
+    if dx != 0 or dy != 0: #Update angle if there is movement
         app.tankAngle = math.atan2(dy, dx)
 
     newX = app.tankX + dx
@@ -145,14 +152,14 @@ def spawnProjectile(app):
     if len(app.projectiles) >= 5:
         return  #Don't spawn more than 5 projectiles
 
-    # Calculate starting position of projectile at the turret's edge
+    #Calculate starting position of projectile at the turret's edge
     turretCenterX = app.tankX + app.tankWidth / 2
     turretCenterY = app.tankY + app.tankHeight / 2
     startX = turretCenterX + math.cos(app.cannonAngle) * (app.turretRadius + 5)
     startY = turretCenterY + math.sin(app.cannonAngle) * (app.turretRadius + 5)
 
-    #Cannon angle as the direction
-    angle = app.cannonAngle
+ 
+    angle = app.cannonAngle    #Cannon angle as the direction
 
     #Add projectiles to list
     app.projectiles.append({
@@ -160,7 +167,7 @@ def spawnProjectile(app):
         'y': startY,
         'radius': 5,
         'angle': angle,
-        'dx': math.cos(angle) * 10,  #Set dx and dy based on angle
+        'dx': math.cos(angle) * 10, #Set dx and dy based on angle
         'dy': math.sin(angle) * 10,
         'bounces': 0  #Count bounces
     })
@@ -177,43 +184,43 @@ def checkCollision(app, newX, newY):
 def onMouseMove(app, mouseX, mouseY):
     turretCenterX = app.tankX + app.tankWidth / 2
     turretCenterY = app.tankY + app.tankHeight / 2
-    dx = mouseX - turretCenterX
-    dy = mouseY - turretCenterY
-    app.cannonAngle = math.atan2(dy, dx)  #Finds angle using arctan
+    dx = mouseX - turretCenterX  # Difference between mouse and turret center X
+    dy = mouseY - turretCenterY  # Difference between mouse and turret center Y
+    app.cannonAngle = math.atan2(dy, dx)  # Get the angle using arctan2 function
+    app.mouseX = mouseX  # Store the mouse position
+    app.mouseY = mouseY  # Store the mouse position
+
 
 def onStep(app):
     for projectile in list(app.projectiles):
-        # Update projectile position with smaller increments to avoid passing through walls
         new_x = projectile['x'] + projectile['dx']
         new_y = projectile['y'] + projectile['dy']
-
-        # Check for collisions with walls
+        
         for wall in app.walls:
             wallX, wallY, wallW, wallH = wall
 
-            # Check if projectile is colliding with a wall horizontally (top or bottom)
+            #Check if projectile is colliding with a wall horizontally 
             if (wallX <= new_x <= wallX + wallW and
                 wallY - projectile['radius'] <= new_y <= wallY + wallH + projectile['radius']):
-                # Adjust the direction of the projectile after hitting the wall
+                #Adjust the direction of the projectile after hitting the wall
                 projectile['dy'] = -projectile['dy']
                 projectile['bounces'] += 1
                 new_y = projectile['y'] + projectile['dy']  # Correct the new position after bounce
-                break  # Stop checking other walls
+                break 
 
-            # Check if projectile is colliding with a wall vertically (left or right)
+            #Check if projectile is colliding with a wall vertically
             if (wallY <= new_y <= wallY + wallH and
                 wallX - projectile['radius'] <= new_x <= wallX + wallW + projectile['radius']):
-                # Adjust the direction of the projectile after hitting the wall
+                #Adjust direction of the projectile after hitting the wall
                 projectile['dx'] = -projectile['dx']
                 projectile['bounces'] += 1
-                new_x = projectile['x'] + projectile['dx']  # Correct the new position after bounce
-                break  # Stop checking other walls
-
-        # Update the projectile position after handling all collisions
+                new_x = projectile['x'] + projectile['dx']
+                break 
+              
         projectile['x'] = new_x
         projectile['y'] = new_y
 
-        # Remove projectile if it bounces twice or goes off-screen
+        #Remove projectile if it bounces twice or off-screen
         if projectile['bounces'] >= 2:
             app.projectiles.remove(projectile)
             continue

@@ -1,10 +1,11 @@
 from cmu_graphics import *
 
+
 def onAppStart(app):
     app.width = 750
     app.height = 500
     
-    # Starting screen box properties
+    #Start box
     app.boxWidth = 200
     app.boxHeight = 100
     app.startBoxX = (app.width - app.boxWidth) / 2  
@@ -13,6 +14,7 @@ def onAppStart(app):
     app.startTextColor = 'white'
     app.isStartHovering = False
     
+    #Controls box
     app.controlsBoxX = app.startBoxX
     app.controlsBoxY = app.startBoxY + app.boxHeight + 20
     app.controlsBoxColor = 'green'
