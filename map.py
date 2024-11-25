@@ -6,7 +6,7 @@ from cmu_graphics import *
 def onAppStart(app):
     app.width = 750
     app.height = 500
-    app.backgroundImagePath = '/Users/dhirennarne/Desktop/Src/Images/background.jpeg'
+    app.backgroundImagePath = '/Users/dhirennarne/Desktop/Src/Images/background.jpeg' #if file path not working comment out line 44
     
     #Tank properties
     app.tankX = app.width / 4
@@ -41,7 +41,7 @@ def onAppStart(app):
     app.mouseY = 0
 
 def redrawAll(app):
-    drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height)
+    #drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height) #if file path not working comment this out
     
     drawTank(app)
 
