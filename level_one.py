@@ -30,6 +30,7 @@ def onAppStart(app):
   app.enemyTankSpeed = 1
   app.enemyTankAngle = 0
   app.enemyLastShotTime = 0
+  app.enemyLives = 3
   
   app.cannonWidth = 30
   app.cannonHeight = 10
@@ -80,6 +81,8 @@ def redrawAll(app):
       drawRect(wall[0], wall[1], wall[2], wall[3], fill='bisque', border='burlyWood', borderWidth=3)
 
   drawCircle(app.mouseX, app.mouseY, app.recticleRadius, fill='red')
+  
+  drawLabel(f'Enemy Health: {app.enemyLives}', 600, 20, size =20, fill='black')
 
 def drawTank(app):
   centerX = app.tankX + app.tankWidth / 2
@@ -212,7 +215,12 @@ def checkProjectileCollisionWithPlayer(app):
           app.tankX <= projectile['x'] <= app.tankX + app.tankWidth and
           app.tankY <= projectile['y'] <= app.tankY + app.tankHeight
       ):
-          return True
+        app.enemyLives -= 1
+        app.projectiles.remove(projectile)
+        if app.enemyLives <= 0:
+            app.gameOver = True
+            app.gameWon = False
+        return True
   return False
 
 
@@ -350,6 +358,12 @@ def checkProjectileCollisionWithEnemy(app):
           
           if (enemyCenterX - app.enemyTankWidth / 2 <= projectile['x'] <= enemyCenterX + app.enemyTankWidth / 2 and
               enemyCenterY - app.enemyTankHeight / 2 <= projectile['y'] <= enemyCenterY + app.enemyTankHeight / 2):
+              
+              app.enemyLives -= 1
+              app.projectiles.remove(projectile)
+              if app.enemyLives <= 0:
+                app.gameOver = True
+                app.gameWon = True
               return True
   return False
 
@@ -378,9 +392,10 @@ def onStep(app):
 
   #check if the player's projectile hits the enemy tank
   if checkProjectileCollisionWithEnemy(app):
-      app.gameOver = True
-      app.gameWon = True  
-      updateFastestTime(app)
+      if app.enemyLives <= 0:
+        app.gameOver = True
+        app.gameWon = True  
+        updateFastestTime(app)
       return 
 
   if checkProjectileCollisionWithPlayer(app):
