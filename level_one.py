@@ -53,6 +53,10 @@ def onAppStart(app):
   app.gameWon = False
   app.startTime = time.time()
   app.fastestTime = None
+  
+  app.enemyHitTime = None
+  app.enemyHitDuration = 0.5
+  app.enemyHealthFlashColor = 'black'
 
     
 def redrawAll(app):
@@ -82,7 +86,7 @@ def redrawAll(app):
 
   drawCircle(app.mouseX, app.mouseY, app.recticleRadius, fill='red')
   
-  drawLabel(f'Enemy Health: {app.enemyLives}', 600, 20, size =20, fill='black')
+  drawLabel(f'Enemy Health: {app.enemyLives}', 625, 20, size =20, fill=app.enemyHealthFlashColor, bold = True)
 
 def drawTank(app):
   centerX = app.tankX + app.tankWidth / 2
@@ -361,6 +365,10 @@ def checkProjectileCollisionWithEnemy(app):
               
               app.enemyLives -= 1
               app.projectiles.remove(projectile)
+              
+              app.enemyHitTime = time.time()
+              app.enemyHealthFlashColor = 'red'
+              
               if app.enemyLives <= 0:
                 app.gameOver = True
                 app.gameWon = True
@@ -433,6 +441,9 @@ def onStep(app):
       
       if projectile['bounces'] >= 2 or not (0 <= new_x <= app.width and 0 <= new_y <= app.height):
           app.projectiles.remove(projectile)
+  if app.enemyHitTime and time.time() - app.enemyHitTime > app.enemyHitDuration:
+    app.enemyHealthFlashColor = 'black'
+    app.enemyHitTime = None
 
 def updateFastestTime(app):
   elapsedTime = time.time() - app.startTime
