@@ -19,6 +19,8 @@ def onAppStart(app):
   app.tankSpeed = 5
   app.tankAngle = 0  #angle in radians for tank rotation
   
+  app.level = 1
+  
   #enemy tank properties
   app.enemyTankX = app.width * 3 / 4
   app.enemyTankY = app.height / 2
@@ -35,6 +37,16 @@ def onAppStart(app):
   app.cannonWidth = 30
   app.cannonHeight = 10
   app.cannonAngle = 0 
+  
+  app.enemyTank2X = app.width * 3 / 4
+  app.enemyTank2Y = app.height / 4 
+  app.enemyTank2Width = 50
+  app.enemyTank2Height = 40
+  app.enemyTank2Color = 'blue' 
+  app.enemyTank2Speed = 1  
+  app.enemyTank2Angle = 0
+  app.enemyTank2Lives = 3  
+  
 
   app.walls = [
     [100, 100, 200, 20],  #Wall 1
@@ -66,6 +78,7 @@ def redrawAll(app):
   if app.gameOver:
     if app.gameWon:
       drawLabel('YOU WIN!', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='green')
+      drawLabel('Press C to Continue to Next Level', app.width / 2, app.height / 2 + 100, size=20, fill='white')
     else:
       drawLabel('GAME OVER', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='red')
       
@@ -73,6 +86,9 @@ def redrawAll(app):
     if app.fastestTime:
         drawLabel(f'Fastest Time: {app.fastestTime:.2f} seconds', app.width / 2, app.height / 2 + 40, size=20, fill='yellow')
     return
+
+  if app.level == 2:
+    drawEnemyTank2(app)
     
   drawTank(app)
   
@@ -86,7 +102,40 @@ def redrawAll(app):
 
   drawCircle(app.mouseX, app.mouseY, app.recticleRadius, fill='red')
   
-  drawLabel(f'Enemy Health: {app.enemyLives}', 625, 20, size =20, fill=app.enemyHealthFlashColor, bold = True)
+  drawLabel(f'Red Tank Health: {app.enemyLives}', 625, 20, size =20, fill=app.enemyHealthFlashColor, bold = True)
+
+
+def drawEnemyTank2(app):
+  centerX = app.enemyTank2X + app.enemyTank2Width / 2
+  centerY = app.enemyTank2Y + app.enemyTank2Height / 2
+
+  halfWidth = app.enemyTank2Width / 2
+  halfHeight = app.enemyTank2Height / 2
+  angle = app.enemyTank2Angle
+
+  corners = [
+  (centerX + math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
+  centerY + math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
+  (centerX + math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
+  centerY + math.sin(angle) * halfWidth - math.cos(angle) * halfHeight),
+  (centerX - math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
+  centerY - math.sin(angle) * halfWidth - math.cos(angle) * halfHeight),
+  (centerX - math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
+  centerY - math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
+  ]
+
+  # Draw the enemy tank body as a rotated rect
+  drawPolygon(corners[0][0], corners[0][1],
+          corners[1][0], corners[1][1],
+          corners[2][0], corners[2][1],
+          corners[3][0], corners[3][1],
+          fill=app.enemyTank2Color, border='black')
+
+  # Draw turret
+  drawCircle(centerX, centerY, app.enemyTurretRadius, fill=app.enemyTurretColor, border='black')
+
+  # Draw enemy cannon
+  drawCannon(app, centerX, centerY, 'darkblue', False)
 
 def drawTank(app):
   centerX = app.tankX + app.tankWidth / 2
@@ -197,6 +246,16 @@ def moveEnemyTank(app):
   if not checkTankCollision(app, newX, newY, app.enemyTankWidth, app.enemyTankHeight):
       app.enemyTankX = newX
       app.enemyTankY = newY
+  #second tank movement
+  dx2 = app.tankX - app.enemyTank2X
+  dy2 = app.tankY - app.enemyTank2Y
+  app.enemyTank2Angle = math.atan2(dy2, dx2)
+  newX2 = app.enemyTank2X + math.cos(app.enemyTank2Angle) * moveSpeed
+  newY2 = app.enemyTank2Y + math.sin(app.enemyTank2Angle) * moveSpeed
+
+  if not checkTankCollision(app, newX2, newY2, app.enemyTank2Width, app.enemyTank2Height):
+      app.enemyTank2X = newX2
+      app.enemyTank2Y = newY2
 
   #keep the enemy tank inside the screen
   app.enemyTankX = max(0, min(app.width - app.enemyTankWidth, app.enemyTankX))
@@ -250,32 +309,77 @@ def lineIntersectsRect(x1, y1, x2, y2, rx, ry, rw, rh):
 def enemyShoot(app):
   currentTime = time.time()
 
-  #check if 0.3 second has passed since last shot
+  # Check if 0.3 second has passed since the last shot for the red tank
   if currentTime - app.enemyLastShotTime < 0.3:
       return
 
-  if isPlayerVisible(app):  #only shoot if the player is visible (WORK IN PROGRESS)
-      app.enemyLastShotTime = currentTime
+  if app.level == 2:
+    app.enemyLastShotTime = currentTime
+    startX = app.enemyTankX + app.enemyTankWidth / 2
+    startY = app.enemyTankY + app.enemyTankHeight / 2
+    angle = app.enemyTankAngle
+    app.projectiles.append({
+        'x': startX,
+        'y': startY,
+        'radius': 5,  
+        'angle': angle,
+        'dx': math.cos(angle) * 10,  
+        'dy': math.sin(angle) * 10,
+        'source': 'enemy',  #indicate an enemy projectile
+        'bounces': 0
+    })
+    
+    # Blue tank shooting
+    startX2 = app.enemyTank2X + app.enemyTank2Width / 2
+    startY2 = app.enemyTank2Y + app.enemyTank2Height / 2
+    angle2 = app.enemyTank2Angle
+    app.projectiles.append({
+        'x': startX2,
+        'y': startY2,
+        'radius': 15,  # Larger bullet for the blue tank
+        'angle': angle2,
+        'dx': 0,
+        'dy': 0,
+        'isTracking': True,  # Tracking behavior for the blue tank
+        'source': 'enemy',
+        'bounces': 0,
+        'speed': 0.1
+    })
+  else:
+      if isPlayerVisible(app):  # Shoot if the player is visible
+        app.enemyLastShotTime = currentTime
+        startX = app.enemyTankX + app.enemyTankWidth / 2
+        startY = app.enemyTankY + app.enemyTankHeight / 2
+        angle = app.enemyTankAngle
 
-      #spawn projectile toward the player
-      startX = app.enemyTankX + app.enemyTankWidth / 2
-      startY = app.enemyTankY + app.enemyTankHeight / 2
-      angle = app.enemyTankAngle
-
-      app.projectiles.append({
-          'x': startX,
-          'y': startY,
-          'radius': 5,
-          'angle': angle,
-          'dx': math.cos(angle) * 10,
-          'dy': math.sin(angle) * 10,
-          'bounces': 0,
-          'source': 'enemy'  #indicate an enemy projectile
-      })
+        app.projectiles.append({
+            'x': startX,
+            'y': startY,
+            'radius': 5,  # Small bullet for the red tank
+            'angle': angle,
+            'dx': math.cos(angle) * 10,
+            'dy': math.sin(angle) * 10,
+            'source': 'enemy',
+            'bounces': 0
+          })
 
 def onKeyPress(app, key):
-  if app.gameOver and key == 'r':
-    onAppStart(app)
+  if app.gameOver:
+      if key == 'r': 
+          onAppStart(app)
+      elif key == 'c':  
+          app.gameOver = False
+          app.enemyLives = 3
+          app.level = 2  
+          if app.level == 2:
+              app.tankX = app.width / 4
+              app.tankY = app.height / 2
+              app.enemyTankX = app.width * 3 / 4
+              app.enemyTankY = app.height / 2
+              app.enemyTankSpeed += 0.5  
+          else:
+              app.enemyTankX = app.width * 3 / 4
+              app.enemyTankY = app.height / 2
 
 def onKeyHold(app, keys):
   dx, dy = 0, 0
@@ -338,6 +442,22 @@ def spawnProjectile(app):
       'bounces': 0,
       'source': 'player'  #player projectile
   })
+
+def moveTrackingProjectile(app, projectile):
+   if projectile['isTracking']: 
+    playerX = app.tankX + app.tankWidth / 2 #projectile's direction to always move towards the player's tank
+    playerY = app.tankY + app.tankHeight / 2
+    
+    dx = playerX - projectile['x'] #angle toward player
+    dy = playerY - projectile['y']
+    angleToPlayer = math.atan2(dy, dx)
+    
+    speed = 0.1  #update the dx, dy to move towards the player
+    projectile['dx'] += math.cos(angleToPlayer) * speed
+    projectile['dy'] += math.sin(angleToPlayer) * speed
+    projectile['x'] += projectile['dx']
+    projectile['y'] += projectile['dy']
+
 
 def checkCollision(app, newX, newY):
   for wall in app.walls:
@@ -417,6 +537,9 @@ def onStep(app):
 
   #handle projectile movement and wall collisions
   for projectile in list(app.projectiles):
+      if projectile.get('isTracking', False):  #move tracking projectiles
+            moveTrackingProjectile(app, projectile)
+      
       new_x = projectile['x'] + projectile['dx']
       new_y = projectile['y'] + projectile['dy']
 
