@@ -56,7 +56,7 @@ def onAppStart(app):
   
   app.enemyHitTime = None
   app.enemyHitDuration = 0.5
-  app.enemyHealthFlashColor = 'black'
+  app.enemyHealthFlashColor = 'red'
 
     
 def redrawAll(app):
@@ -175,7 +175,7 @@ def drawEnemyTank(app):
               corners[1][0], corners[1][1],
               corners[2][0], corners[2][1],
               corners[3][0], corners[3][1],
-              fill=app.enemyTankColor, border='black')
+              fill=app.enemyHealthFlashColor, border='black')
 
   #draw turret
   drawCircle(centerX, centerY, app.enemyTurretRadius, fill=app.enemyTurretColor, border='black')
@@ -251,7 +251,7 @@ def enemyShoot(app):
   currentTime = time.time()
 
   #check if 1/2 second has passed since last shot
-  if currentTime - app.enemyLastShotTime < 0.5:
+  if currentTime - app.enemyLastShotTime < 0.50:
       return
 
   if isPlayerVisible(app):  #only shoot if the player is visible (WORK IN PROGRESS)
@@ -356,24 +356,25 @@ def checkTankCollisionWithPlayer(app):
 
 def checkProjectileCollisionWithEnemy(app):
   for projectile in app.projectiles:  
-      if projectile['source'] == 'player':  #check player's projectiles
+      if projectile['source'] == 'player':  # check player's projectiles
           enemyCenterX = app.enemyTankX + app.enemyTankWidth / 2
           enemyCenterY = app.enemyTankY + app.enemyTankHeight / 2
-          
+
           if (enemyCenterX - app.enemyTankWidth / 2 <= projectile['x'] <= enemyCenterX + app.enemyTankWidth / 2 and
               enemyCenterY - app.enemyTankHeight / 2 <= projectile['y'] <= enemyCenterY + app.enemyTankHeight / 2):
-              
+
               app.enemyLives -= 1
               app.projectiles.remove(projectile)
-              
-              app.enemyHitTime = time.time()
-              app.enemyHealthFlashColor = 'red'
-              
+
+              app.enemyHitTime = time.time()  # record the time of the hit
+              app.enemyHealthFlashColor = 'yellow'  # change the color to red for the flash effect
+
               if app.enemyLives <= 0:
-                app.gameOver = True
-                app.gameWon = True
+                  app.gameOver = True
+                  app.gameWon = True  
               return True
   return False
+
 
 def onMouseMove(app, mouseX, mouseY):
   turretCenterX = app.tankX + app.tankWidth / 2
@@ -441,10 +442,18 @@ def onStep(app):
       
       if projectile['bounces'] >= 2 or not (0 <= new_x <= app.width and 0 <= new_y <= app.height):
           app.projectiles.remove(projectile)
-  if app.enemyHitTime and time.time() - app.enemyHitTime > app.enemyHitDuration:
-    app.enemyHealthFlashColor = 'black'
-    app.enemyHitTime = None
 
+  if app.enemyHitTime and time.time() - app.enemyHitTime < 0.20:
+      if int(time.time() * 10) % 0.1 == 0:  
+          app.enemyHealthFlashColor = 'yellow'
+      else:
+          app.enemyHealthFlashColor = 'red'
+
+  elif app.enemyHitTime and time.time() - app.enemyHitTime > 0.20:
+
+      app.enemyHealthFlashColor = 'red'
+      app.enemyHitTime = None
+      
 def updateFastestTime(app):
   elapsedTime = time.time() - app.startTime
   if app.fastestTime is None or elapsedTime < app.fastestTime:
