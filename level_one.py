@@ -250,8 +250,8 @@ def lineIntersectsRect(x1, y1, x2, y2, rx, ry, rw, rh):
 def enemyShoot(app):
   currentTime = time.time()
 
-  #check if 1/2 second has passed since last shot
-  if currentTime - app.enemyLastShotTime < 0.50:
+  #check if 0.3 second has passed since last shot
+  if currentTime - app.enemyLastShotTime < 0.3:
       return
 
   if isPlayerVisible(app):  #only shoot if the player is visible (WORK IN PROGRESS)
@@ -314,7 +314,9 @@ def spawnProjectile(app):
 
   app.lastShotTime = currentTime
 
-  if len(app.projectiles) >= 5:
+  playerProjectiles = [p for p in app.projectiles if p['source'] == 'player']
+
+  if len(playerProjectiles) >= 5:
       return  #don't spawn more than 5 projectiles
 
   #calculate starting position of projectile at the turret's edge
