@@ -370,7 +370,8 @@ def onKeyPress(app, key):
       elif key == 'c':  
           app.gameOver = False
           app.enemyLives = 3
-          app.level = 2  
+          app.level = 2
+          app.projectiles = []  
           if app.level == 2:
               app.tankX = app.width / 4
               app.tankY = app.height / 2
