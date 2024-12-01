@@ -69,6 +69,9 @@ def onAppStart(app):
   app.enemyHitTime = None
   app.enemyHitDuration = 0.5
   app.enemyHealthFlashColor = 'red'
+  
+  app.fastestTimeLevel1 = None
+  app.fastestTimeLevel2 = None
 
     
 def redrawAll(app):
@@ -81,10 +84,20 @@ def redrawAll(app):
       drawLabel('Press C to Continue to Next Level', app.width / 2, app.height / 2 + 100, size=20, fill='white')
     else:
       drawLabel('GAME OVER', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='red')
+    
+    if app.level == 1:
+      fastest_time_text = (
+          f'Fastest Time (Level 1): {rounded(app.fastestTimeLevel1)} seconds'
+          if app.fastestTimeLevel1 is not None
+          else 'Fastest Time (Level 1): No recorded time yet.')
+      drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='yellow')
+    elif app.level == 2:
+      fastest_time_text = (
+          f'Fastest Time (Level 2): {rounded(app.fastestTimeLevel2)} seconds' 
+          if app.fastestTimeLevel2 is not None else 'Fastest Time (Level 2): No recorded time yet.')
+      drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='yellow')
       
     drawLabel(f'Press R to Restart', app.width / 2, app.height / 2, size=20, fill='white')
-    if app.fastestTime:
-        drawLabel(f'Fastest Time: {app.fastestTime:.2f} seconds', app.width / 2, app.height / 2 + 40, size=20, fill='yellow')
     return
 
   if app.level == 2:
@@ -364,23 +377,24 @@ def enemyShoot(app):
           })
 
 def onKeyPress(app, key):
-  if app.gameOver:
-      if key == 'r': 
-          onAppStart(app)
-      elif key == 'c':  
-          app.gameOver = False
-          app.enemyLives = 3
-          app.level = 2
-          app.projectiles = []  
-          if app.level == 2:
-              app.tankX = app.width / 4
-              app.tankY = app.height / 2
-              app.enemyTankX = app.width * 3 / 4
-              app.enemyTankY = app.height / 2
-              app.enemyTankSpeed += 0.5  
-          else:
-              app.enemyTankX = app.width * 3 / 4
-              app.enemyTankY = app.height / 2
+    if key == 'r':
+        onAppStart(app)
+    elif key == 'c':  
+        app.gameOver = False
+        app.enemyLives = 3
+        app.level = 2
+        app.projectiles = []
+        app.startTime = time.time()  #reset the start time when continuing
+        if app.level == 2:
+            app.tankX = app.width / 4
+            app.tankY = app.height / 2
+            app.enemyTankX = app.width * 3 / 4
+            app.enemyTankY = app.height / 2
+            app.enemyTankSpeed += 0.5  # increase speed for the second level
+
+        else:
+          app.enemyTankX = app.width * 3 / 4
+          app.enemyTankY = app.height / 2
 
 def onKeyHold(app, keys):
   dx, dy = 0, 0
@@ -511,8 +525,17 @@ def onMouseMove(app, mouseX, mouseY):
 
 def onStep(app):
   if app.gameOver:
-      return
-  
+    if app.gameWon:
+      elapsedTime = time.time() - app.startTime
+      if app.level == 1:
+        if app.fastestTimeLevel1 is None or elapsedTime < app.fastestTimeLevel1:
+          app.fastestTimeLevel1 = elapsedTime
+      elif app.level == 2:
+        if app.fastestTimeLevel2 is None or elapsedTime < app.fastestTimeLevel2:
+            app.fastestTimeLevel2 = elapsedTime
+    if app.gameOver:
+        return
+      
   moveEnemyTank(app)
   enemyShoot(app)
 
