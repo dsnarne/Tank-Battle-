@@ -1,11 +1,11 @@
 from cmu_graphics import *
-
+#from levels import *
 
 def onAppStart(app):
     app.width = 750
     app.height = 500
     
-    #Start box
+    #start box
     app.boxWidth = 200
     app.boxHeight = 100
     app.startBoxX = (app.width - app.boxWidth) / 2  
@@ -14,7 +14,7 @@ def onAppStart(app):
     app.startTextColor = 'white'
     app.isStartHovering = False
     
-    #Controls box
+    #controls box
     app.controlsBoxX = app.startBoxX
     app.controlsBoxY = app.startBoxY + app.boxHeight + 20
     app.controlsBoxColor = 'green'
@@ -47,13 +47,13 @@ def redrawAll(app):
             drawLabel('PRESS START AND THE CHALLENGE BEGINS', 
                     app.width / 2, 175, size=30, fill='white', bold=True, border= 'black', borderWidth = 1)
         
-        #Start button
+        #start button
         drawRect(app.startBoxX, app.startBoxY, app.boxWidth, app.boxHeight, 
                 fill=app.startBoxColor, border='black')
         drawLabel('START', app.startBoxX + app.boxWidth / 2, app.startBoxY + app.boxHeight / 2,
                 size=50, bold=True, fill=app.startTextColor)
         
-        #Controls button
+        #controls button
         drawRect(app.controlsBoxX, app.controlsBoxY, app.boxWidth, app.boxHeight, 
                 fill=app.controlsBoxColor, border='black')
         drawLabel('CONTROLS', app.controlsBoxX + app.boxWidth / 2, 
@@ -62,12 +62,12 @@ def redrawAll(app):
 def onStep(app):
     app.flickerTimer += 1
 
-    #Every 33 steps change visibility
+    #every 33 steps change visibility
     if app.flickerTimer % 33 == 0:
         app.isFlickerVisible = not app.isFlickerVisible
 
 def onMouseMove(app, mouseX, mouseY):
-    #Hover over start button
+    #hover over start button
     if (app.startBoxX <= mouseX <= app.startBoxX + app.boxWidth and
         app.startBoxY <= mouseY <= app.startBoxY + app.boxHeight):
         app.isStartHovering = True
@@ -78,7 +78,7 @@ def onMouseMove(app, mouseX, mouseY):
         app.startBoxColor = 'blue'
         app.startTextColor = 'white'
 
-    #Hover over controls button
+    #hover over controls button
     if (app.controlsBoxX <= mouseX <= app.controlsBoxX + app.boxWidth and
         app.controlsBoxY <= mouseY <= app.controlsBoxY + app.boxHeight):
         app.isControlsHovering = True
@@ -94,6 +94,7 @@ def onMousePress(app, mouseX, mouseY):
         if (app.controlsBoxX <= mouseX <= app.controlsBoxX + app.boxWidth and
             app.controlsBoxY <= mouseY <= app.controlsBoxY + app.boxHeight):
             app.isControlsPage = True
+            
 
 def onKeyPress(app, key):
     if app.isControlsPage and key == 'escape':

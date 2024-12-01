@@ -2,11 +2,15 @@ import math
 import random
 import time 
 from cmu_graphics import *
+from PIL import Image
 
 def onAppStart(app):
   app.width = 750
   app.height = 500
   app.backgroundImagePath = '/Users/dhirennarne/Desktop/Src/Images/background.jpeg' #if file path not working comment out line 44
+  app.backgroundImagePath = Image.open("Images/background.jpeg")
+  app.backgroundImagePath = CMUImage(app.backgroundImagePath)
+  
   
   #tank properties
   app.tankX = app.width / 4
@@ -81,7 +85,7 @@ def redrawAll(app):
   if app.gameOver:
     if app.gameWon:
       drawLabel('YOU WIN!', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='green')
-      drawLabel('Press C to Continue to Next Level', app.width / 2, app.height / 2 + 100, size=20, fill='white')
+      drawLabel('Press C to Continue to Next Level', app.width / 2, app.height / 2 + 100, size=20, fill='blue')
     else:
       drawLabel('GAME OVER', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='red')
     
@@ -90,14 +94,14 @@ def redrawAll(app):
           f'Fastest Time (Level 1): {rounded(app.fastestTimeLevel1)} seconds'
           if app.fastestTimeLevel1 is not None
           else 'Fastest Time (Level 1): No recorded time yet.')
-      drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='yellow')
+      drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='black')
     elif app.level == 2:
       fastest_time_text = (
           f'Fastest Time (Level 2): {rounded(app.fastestTimeLevel2)} seconds' 
           if app.fastestTimeLevel2 is not None else 'Fastest Time (Level 2): No recorded time yet.')
-      drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='yellow')
+      drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='black')
       
-    drawLabel(f'Press R to Restart', app.width / 2, app.height / 2, size=20, fill='white')
+    drawLabel(f'Press R to Restart', app.width / 2, app.height / 2, size=20, fill='red')
     return
 
   if app.level == 2:
@@ -322,7 +326,7 @@ def lineIntersectsRect(x1, y1, x2, y2, rx, ry, rw, rh):
 def enemyShoot(app):
   currentTime = time.time()
 
-  # Check if 0.3 second has passed since the last shot for the red tank
+  #check if 0.3 second has passed since the last shot for the red tank
   if currentTime - app.enemyLastShotTime < 0.3:
       return
 
@@ -342,24 +346,24 @@ def enemyShoot(app):
         'bounces': 0
     })
     
-    # Blue tank shooting
+    #blue tank shooting
     startX2 = app.enemyTank2X + app.enemyTank2Width / 2
     startY2 = app.enemyTank2Y + app.enemyTank2Height / 2
     angle2 = app.enemyTank2Angle
     app.projectiles.append({
         'x': startX2,
         'y': startY2,
-        'radius': 15,  # Larger bullet for the blue tank
+        'radius': 15,  #larger bullet for the blue tank
         'angle': angle2,
         'dx': 0,
         'dy': 0,
-        'isTracking': True,  # Tracking behavior for the blue tank
+        'isTracking': True,  #tracking behavior for the blue tank
         'source': 'enemy',
         'bounces': 0,
         'speed': 0.1
     })
   else:
-      if isPlayerVisible(app):  # Shoot if the player is visible
+      if isPlayerVisible(app):  #shoot if the player is visible
         app.enemyLastShotTime = currentTime
         startX = app.enemyTankX + app.enemyTankWidth / 2
         startY = app.enemyTankY + app.enemyTankHeight / 2
@@ -368,7 +372,7 @@ def enemyShoot(app):
         app.projectiles.append({
             'x': startX,
             'y': startY,
-            'radius': 5,  # Small bullet for the red tank
+            'radius': 5,  #small bullet for the red tank
             'angle': angle,
             'dx': math.cos(angle) * 10,
             'dy': math.sin(angle) * 10,
@@ -390,7 +394,7 @@ def onKeyPress(app, key):
             app.tankY = app.height / 2
             app.enemyTankX = app.width * 3 / 4
             app.enemyTankY = app.height / 2
-            app.enemyTankSpeed += 0.5  # increase speed for the second level
+            app.enemyTankSpeed += 0.5  #increase speed for the second level
 
         else:
           app.enemyTankX = app.width * 3 / 4
