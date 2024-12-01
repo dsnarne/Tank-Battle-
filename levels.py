@@ -7,7 +7,6 @@ from PIL import Image
 def onAppStart(app):
   app.width = 750
   app.height = 500
-  app.backgroundImagePath = '/Users/dhirennarne/Desktop/Src/Images/background.jpeg' #if file path not working comment out line 44
   app.backgroundImagePath = Image.open("Images/background.jpeg")
   app.backgroundImagePath = CMUImage(app.backgroundImagePath)
   
@@ -79,7 +78,7 @@ def onAppStart(app):
 
     
 def redrawAll(app):
-  drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height) #if file path not working comment this out
+  drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height)
   
   
   if app.gameOver:

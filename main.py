@@ -1,5 +1,6 @@
 from cmu_graphics import *
 #from levels import *
+from PIL import Image
 
 def onAppStart(app):
     app.width = 750
@@ -23,8 +24,8 @@ def onAppStart(app):
     
     app.isControlsPage = False
     
-    app.backgroundImagePath = '/Users/dhirennarne/Desktop/Src/Images/background.jpeg'
-    
+    app.backgroundImagePath = Image.open("Images/background.jpeg")
+    app.backgroundImagePath = CMUImage(app.backgroundImagePath)
 
     app.isFlickerVisible = True  
     app.flickerTimer = 0  
