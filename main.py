@@ -75,6 +75,9 @@ def onStep(app):
     #every 33 steps change visibility
     if app.flickerTimer % 33 == 0:
         app.isFlickerVisible = not app.isFlickerVisible
+    if app.isGameStarted:
+        lv.onStep(app)
+        return
 
 def onMouseMove(app, mouseX, mouseY):
     #hover over start button
@@ -98,6 +101,9 @@ def onMouseMove(app, mouseX, mouseY):
         app.isControlsHovering = False
         app.controlsBoxColor = 'green'
         app.controlsTextColor = 'white'
+    if app.isGameStarted:
+        lv.onMouseMove(app, mouseX, mouseY)
+        return
 
 def onMousePress(app, mouseX, mouseY):
     if not app.isControlsPage:
@@ -106,11 +112,7 @@ def onMousePress(app, mouseX, mouseY):
             app.isControlsPage = True
         elif (app.startBoxX <= mouseX <= app.startBoxX + app.boxWidth and
               app.startBoxY <= mouseY <= app.startBoxY + app.boxHeight):
-            app.isGameStarted = True
-            
-            
-    
-            
+            app.isGameStarted = True  
 
 def onKeyPress(app, key):
     if app.isGameStarted:
@@ -123,14 +125,7 @@ def onKeyHold(app, keys):
     if app.isGameStarted:
         lv.onKeyHold(app,keys)
         return
-def onMouseMove(app, mouseX, mouseY):
-    if app.isGameStarted:
-        lv.onMouseMove(app, mouseX, mouseY)
-        return
-def onStep(app):
-    if app.isGameStarted:
-        lv.onStep(app)
-        return
+
 
 def main():
     runApp(width=750, height=500)
