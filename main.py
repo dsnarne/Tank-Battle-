@@ -1,8 +1,9 @@
 from cmu_graphics import *
-#from levels import *
+import levels as lv
 from PIL import Image
 
 def onAppStart(app):
+    print('hi')
     app.width = 750
     app.height = 500
     
@@ -28,9 +29,17 @@ def onAppStart(app):
     app.backgroundImagePath = CMUImage(app.backgroundImagePath)
 
     app.isFlickerVisible = True  
-    app.flickerTimer = 0  
+    app.flickerTimer = 0
+    
+    app.screen = 'ui'  
+    app.isGameStarted = False
+    lv.onAppStart(app)
 
 def redrawAll(app):
+    if app.isGameStarted:
+        lv.drawGame(app)
+        return 
+    
     drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height)
     
     if app.isControlsPage:
@@ -95,11 +104,33 @@ def onMousePress(app, mouseX, mouseY):
         if (app.controlsBoxX <= mouseX <= app.controlsBoxX + app.boxWidth and
             app.controlsBoxY <= mouseY <= app.controlsBoxY + app.boxHeight):
             app.isControlsPage = True
+        elif (app.startBoxX <= mouseX <= app.startBoxX + app.boxWidth and
+              app.startBoxY <= mouseY <= app.startBoxY + app.boxHeight):
+            app.isGameStarted = True
+            
+            
+    
             
 
 def onKeyPress(app, key):
+    if app.isGameStarted:
+        lv.onKeyPress(app,key)
+        return
     if app.isControlsPage and key == 'escape':
         app.isControlsPage = False
+
+def onKeyHold(app, keys):
+    if app.isGameStarted:
+        lv.onKeyHold(app,keys)
+        return
+def onMouseMove(app, mouseX, mouseY):
+    if app.isGameStarted:
+        lv.onMouseMove(app, mouseX, mouseY)
+        return
+def onStep(app):
+    if app.isGameStarted:
+        lv.onStep(app)
+        return
 
 def main():
     runApp(width=750, height=500)

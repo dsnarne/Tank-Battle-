@@ -5,6 +5,7 @@ from cmu_graphics import *
 from PIL import Image
 
 def onAppStart(app):
+  print('levels')
   app.width = 750
   app.height = 500
   app.backgroundImagePath = Image.open("Images/background.jpeg")
@@ -77,7 +78,7 @@ def onAppStart(app):
   app.fastestTimeLevel2 = None
 
     
-def redrawAll(app):
+def drawGame(app):
   drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height)
   
   
@@ -611,7 +612,7 @@ def updateFastestTime(app):
   if app.fastestTime is None or elapsedTime < app.fastestTime:
       app.fastestTime = elapsedTime
 
-def main():
-  runApp(width=750, height=500)
+# def main():
+#   runApp(width=750, height=500)
 
-main()
+# main()
