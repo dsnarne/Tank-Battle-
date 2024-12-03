@@ -3,7 +3,6 @@ import levels as lv
 from PIL import Image
 
 def onAppStart(app):
-    print('hi')
     app.width = 750
     app.height = 500
     
