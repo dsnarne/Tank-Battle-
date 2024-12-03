@@ -86,6 +86,27 @@ def drawGame(app):
   drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height)
   if app.levelSelect:
     drawLevelSelectScreen(app)
+    
+    if app.fastestTimeLevel1 is not None:
+        fastestTimeLevel1Text = f'Fastest Time (Level 1): {rounded(app.fastestTimeLevel1)} seconds'
+    else:
+        fastestTimeLevel1Text = 'Fastest Time (Level 1): No recorded time yet.'
+    
+    if app.fastestTimeLevel2 is not None:
+        fastestTimeLevel2Text = f'Fastest Time (Level 2): {rounded(app.fastestTimeLevel2)} seconds'
+    else:
+        fastestTimeLevel2Text = 'Fastest Time (Level 2): No recorded time yet.'
+    drawLabel(fastestTimeLevel1Text, app.width / 2, app.height / 2 - 90, size=20, fill='red')
+    drawLabel(fastestTimeLevel2Text, app.width / 2, app.height / 2 - 60, size=20, fill='red')
+    
+    
+    
+    
+    
+    
+    
+    
+    
     return
   else:  
     if app.gameOver:
