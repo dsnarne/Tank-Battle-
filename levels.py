@@ -92,7 +92,7 @@ def drawGame(app):
       if app.gameWon:
         if app.level == 2:
           drawLabel('YOU WIN THE GAME!', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='green')
-          drawLabel('Press C to Continue to Next Level', app.width / 2, app.height / 2 + 100, size=20, fill='blue')
+          drawLabel('Now Go For the Fastest Time!!!', app.width / 2, app.height / 2 + 100, size=20, fill='blue')
         else:  
           drawLabel('YOU WIN!', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='green')
           drawLabel('Press C to Continue to Next Level', app.width / 2, app.height / 2 + 100, size=20, fill='blue')
@@ -541,7 +541,6 @@ def checkProjectileCollisionWithEnemy(app):
                   app.gameWon = True  
               return True
   return False
-
 
 def onMouseMove(app, mouseX, mouseY):
   turretCenterX = app.tankX + app.tankWidth / 2
