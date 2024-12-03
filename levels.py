@@ -5,7 +5,6 @@ from cmu_graphics import *
 from PIL import Image
 
 def onAppStart(app):
-  print('levels')
   app.width = 750
   app.height = 500
   app.backgroundImagePath = Image.open("Images/background.jpeg")
@@ -612,7 +611,3 @@ def updateFastestTime(app):
   if app.fastestTime is None or elapsedTime < app.fastestTime:
       app.fastestTime = elapsedTime
 
-# def main():
-#   runApp(width=750, height=500)
-
-# main()
