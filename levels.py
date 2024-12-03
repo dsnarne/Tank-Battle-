@@ -15,6 +15,7 @@ def onAppStart(app):
   app.startTime = time.time()
   app.fastestTimeLevel1 = None
   app.fastestTimeLevel2 = None
+  app.levelSelect = True
   
   restartApp(app)
   
@@ -79,51 +80,56 @@ def restartApp(app):
   app.enemyHitTime = None
   app.enemyHitDuration = 0.5
   app.enemyHealthFlashColor = 'red'
-  
-
+  app.levelSelect = True
     
 def drawGame(app):
   drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height)
-  
-  
-  if app.gameOver:
-    if app.gameWon:
-      drawLabel('YOU WIN!', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='green')
-      drawLabel('Press C to Continue to Next Level', app.width / 2, app.height / 2 + 100, size=20, fill='blue')
-    else:
-      drawLabel('GAME OVER', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='red')
-    
-    if app.level == 1:
-      fastest_time_text = (
-          f'Fastest Time (Level 1): {rounded(app.fastestTimeLevel1)} seconds'
-          if app.fastestTimeLevel1 is not None
-          else 'Fastest Time (Level 1): No recorded time yet.')
-      drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='black')
-    elif app.level == 2:
-      fastest_time_text = (
-          f'Fastest Time (Level 2): {rounded(app.fastestTimeLevel2)} seconds' 
-          if app.fastestTimeLevel2 is not None else 'Fastest Time (Level 2): No recorded time yet.')
-      drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='black')
-      
-    drawLabel(f'Press R to Restart', app.width / 2, app.height / 2, size=20, fill='red')
+  if app.levelSelect:
+    drawLevelSelectScreen(app)
     return
+  else:  
+    if app.gameOver:
+      if app.gameWon:
+        if app.level == 2:
+          drawLabel('YOU WIN THE GAME!', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='green')
+          drawLabel('Press C to Continue to Next Level', app.width / 2, app.height / 2 + 100, size=20, fill='blue')
+        else:  
+          drawLabel('YOU WIN!', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='green')
+          drawLabel('Press C to Continue to Next Level', app.width / 2, app.height / 2 + 100, size=20, fill='blue')
+      else:
+        drawLabel('GAME OVER', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='red')
+      
+      if app.level == 1:
+        fastest_time_text = (
+            f'Fastest Time (Level 1): {rounded(app.fastestTimeLevel1)} seconds'
+            if app.fastestTimeLevel1 is not None
+            else 'Fastest Time (Level 1): No recorded time yet.')
+        drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='black')
+      elif app.level == 2:
+        fastest_time_text = (
+            f'Fastest Time (Level 2): {rounded(app.fastestTimeLevel2)} seconds' 
+            if app.fastestTimeLevel2 is not None else 'Fastest Time (Level 2): No recorded time yet.')
+        drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='black')
+        
+      drawLabel(f'Press R to Restart', app.width / 2, app.height / 2, size=20, fill='red')
+      return
 
-  if app.level == 2:
-    drawEnemyTank2(app)
+    if app.level == 2:
+      drawEnemyTank2(app)
+      
+    drawTank(app)
     
-  drawTank(app)
-  
-  drawEnemyTank(app)
+    drawEnemyTank(app)
 
-  for projectile in app.projectiles:
-      drawCircle(projectile['x'], projectile['y'], projectile['radius'], fill='black')
+    for projectile in app.projectiles:
+        drawCircle(projectile['x'], projectile['y'], projectile['radius'], fill='black')
 
-  for wall in app.walls:
-      drawRect(wall[0], wall[1], wall[2], wall[3], fill='bisque', border='burlyWood', borderWidth=3)
+    for wall in app.walls:
+        drawRect(wall[0], wall[1], wall[2], wall[3], fill='bisque', border='burlyWood', borderWidth=3)
 
-  drawCircle(app.mouseX, app.mouseY, app.recticleRadius, fill='red')
-  
-  drawLabel(f'Red Tank Health: {app.enemyLives}', 625, 20, size =20, fill=app.enemyHealthFlashColor, bold = True)
+    drawCircle(app.mouseX, app.mouseY, app.recticleRadius, fill='red')
+    
+    drawLabel(f'Red Tank Health: {app.enemyLives}', 625, 20, size =20, fill=app.enemyHealthFlashColor, bold = True)
 
 
 def drawEnemyTank2(app):
@@ -544,7 +550,29 @@ def onMouseMove(app, mouseX, mouseY):
   dy = mouseY - turretCenterY  #difference between mouse and turret center Y
   app.cannonAngle = math.atan2(dy, dx)  #get the angle using arctan2 function
   app.mouseX = mouseX  
-  app.mouseY = mouseY  
+  app.mouseY = mouseY
+
+def onMousePress(app, mouseX, mouseY):
+    if app.levelSelect:
+        level1_button_x = app.width / 4 - 100
+        level1_button_y = app.height / 2
+        level1_button_width = 200
+        level1_button_height = 50
+        # Check if mouse is within the bounds of Level 1 button
+        if (level1_button_x <= mouseX <= level1_button_x + level1_button_width and
+            level1_button_y <= mouseY <= level1_button_y + level1_button_height):
+            app.levelSelect = False  # Hide the level select screen
+            app.level = 1  # Set the level to 1
+
+        level2_button_x = app.width * 3 / 4 - 100
+        level2_button_y = app.height / 2
+        # Check if mouse is within the bounds of Level 2 button
+        if (level2_button_x <= mouseX <= level2_button_x + level1_button_width and
+            level2_button_y <= mouseY <= level2_button_y + level1_button_height):
+            app.levelSelect = False  # Hide the level select screen
+            app.level = 2  # Set the level to 2
+
+  
 
 
 def onStep(app):
@@ -630,10 +658,28 @@ def onStep(app):
 def updateFastestTime(app):
   elapsedTime = time.time() - app.startTime
   if app.level == 1:
-      if app.fastestTimeLevel1 is None or elapsedTime < app.fastestTimeLevel1:
-          app.fastestTimeLevel1 = elapsedTime
+    if app.fastestTimeLevel1 is None or elapsedTime < app.fastestTimeLevel1:
+        app.fastestTimeLevel1 = elapsedTime
   elif app.level == 2:
-      if app.fastestTimeLevel2 is None or elapsedTime < app.fastestTimeLevel2:
-          app.fastestTimeLevel2 = elapsedTime
+    if app.fastestTimeLevel2 is None or elapsedTime < app.fastestTimeLevel2:
+        app.fastestTimeLevel2 = elapsedTime
 
+def drawLevelSelectScreen(app):
+  drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height)
+  
+  drawLabel('Select Level', app.width / 2, 100, size=40, bold=True, fill='Black')
+
+  level1_button_x = app.width / 4 - 100
+  level1_button_y = app.height / 2
+  level1_button_width = 200
+  level1_button_height = 50
+  drawRect(level1_button_x, level1_button_y, level1_button_width, level1_button_height, fill='lightblue', border='black')
+  drawLabel('Level 1', level1_button_x + level1_button_width / 2, level1_button_y + level1_button_height / 2, size=20, bold=True)
+
+  level2_button_x = app.width * 3 / 4 - 100
+  level2_button_y = app.height / 2
+  drawRect(level2_button_x, level2_button_y, level1_button_width, level1_button_height, fill='lightgreen', border='black')
+  drawLabel('Level 2', level2_button_x + level1_button_width / 2, level2_button_y + level1_button_height / 2, size=20, bold=True)
+  
+  drawLabel('Click on a level to start', app.width / 2, app.height / 2 + 100, size=20, fill='Black')
 
