@@ -10,7 +10,18 @@ def onAppStart(app):
   app.backgroundImagePath = Image.open("Images/background.jpeg")
   app.backgroundImagePath = CMUImage(app.backgroundImagePath)
   
+  app.gameOver = False
+  app.gameWon = False
+  app.startTime = time.time()
+  app.fastestTimeLevel1 = None
+  app.fastestTimeLevel2 = None
   
+  restartApp(app)
+  
+def restartApp(app):
+  app.gameOver = False
+  app.gameWon = False
+  app.startTime = time.time()
   #tank properties
   app.tankX = app.width / 4
   app.tankY = app.height / 2
@@ -64,17 +75,11 @@ def onAppStart(app):
   app.mouseX = 0
   app.mouseY = 0
   
-  app.gameOver = False
-  app.gameWon = False
-  app.startTime = time.time()
-  app.fastestTime = None
   
   app.enemyHitTime = None
   app.enemyHitDuration = 0.5
   app.enemyHealthFlashColor = 'red'
   
-  app.fastestTimeLevel1 = None
-  app.fastestTimeLevel2 = None
 
     
 def drawGame(app):
@@ -342,8 +347,7 @@ def enemyShoot(app):
         'dx': math.cos(angle) * 10,  
         'dy': math.sin(angle) * 10,
         'source': 'enemy',  #indicate an enemy projectile
-        'bounces': 0
-    })
+        'bounces': 0})
     
     #blue tank shooting
     startX2 = app.enemyTank2X + app.enemyTank2Width / 2
@@ -381,7 +385,18 @@ def enemyShoot(app):
 
 def onKeyPress(app, key):
     if key == 'r':
-        onAppStart(app)
+      if app.gameOver:
+        elapsedTime = time.time() - app.startTime
+        
+        if app.level == 1:
+          if app.fastestTimeLevel1 is None or elapsedTime < app.fastestTimeLevel1:
+            app.fastestTimeLevel1 = elapsedTime
+        elif app.level == 2:
+          if app.fastestTimeLevel2 is None or elapsedTime < app.fastestTimeLevel2:
+            app.fastestTimeLevel2 = elapsedTime
+      
+      restartApp(app)
+      
     elif key == 'c':  
         app.gameOver = False
         app.enemyLives = 3
@@ -394,10 +409,16 @@ def onKeyPress(app, key):
             app.enemyTankX = app.width * 3 / 4
             app.enemyTankY = app.height / 2
             app.enemyTankSpeed += 0.5  #increase speed for the second level
-
-        else:
-          app.enemyTankX = app.width * 3 / 4
-          app.enemyTankY = app.height / 2
+            app.enemyTank2X = app.width * 3 / 4
+            app.enemyTank2Y = app.height / 4 
+            app.enemyTank2Width = 50
+            app.enemyTank2Height = 40
+            app.enemyTank2Color = 'blue' 
+            app.enemyTank2Speed = 1  
+            app.enemyTank2Angle = 0
+            app.enemyTank2Lives = 3
+                    
+  
 
 def onKeyHold(app, keys):
   dx, dy = 0, 0
@@ -608,6 +629,11 @@ def onStep(app):
       
 def updateFastestTime(app):
   elapsedTime = time.time() - app.startTime
-  if app.fastestTime is None or elapsedTime < app.fastestTime:
-      app.fastestTime = elapsedTime
+  if app.level == 1:
+      if app.fastestTimeLevel1 is None or elapsedTime < app.fastestTimeLevel1:
+          app.fastestTimeLevel1 = elapsedTime
+  elif app.level == 2:
+      if app.fastestTimeLevel2 is None or elapsedTime < app.fastestTimeLevel2:
+          app.fastestTimeLevel2 = elapsedTime
+
 

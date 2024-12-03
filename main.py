@@ -1,7 +1,7 @@
 from cmu_graphics import *
 import levels as lv
 from PIL import Image
-
+#save faset time even when r is hit and app is restarted
 def onAppStart(app):
     app.width = 750
     app.height = 500
