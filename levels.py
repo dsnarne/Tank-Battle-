@@ -123,15 +123,16 @@ def drawGame(app):
         drawLabel('GAME OVER', app.width / 2, app.height / 2 - 40, size=40, bold=True, fill='red')
       
       if app.level == 1:
-        fastest_time_text = (
-          f'Fastest Time (Level 1): {rounded(app.fastestTimeLevel1)} seconds'
+        fastest_time_text = (f'Fastest Time (Level 1): {rounded(app.fastestTimeLevel1)} seconds'
           if app.fastestTimeLevel1 is not None
           else 'Fastest Time (Level 1): No recorded time yet.')
+        
         drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='black')
+      
       elif app.level == 2:
-        fastest_time_text = (
-          f'Fastest Time (Level 2): {rounded(app.fastestTimeLevel2)} seconds' 
+        fastest_time_text = (f'Fastest Time (Level 2): {rounded(app.fastestTimeLevel2)} seconds' 
           if app.fastestTimeLevel2 is not None else 'Fastest Time (Level 2): No recorded time yet.')
+        
         drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='black')
         
       drawLabel(f'Press R to Restart', app.width / 2, app.height / 2, size=20, fill='red')
@@ -239,7 +240,6 @@ def drawTank(app):
   drawCannon(app, centerX, centerY, 'lightgreen', True)
 
 def drawCannon(app, centerX, centerY, color, isPlayer):
-  
   if isPlayer:
     angle = app.cannonAngle  #cannon's angle towards the mouse
     halfHeight = app.cannonHeight / 2
@@ -625,7 +625,8 @@ def onStep(app):
       app.gameWon = False 
       updateFastestTime(app)
       return  
-    
+  
+  #removes power up words after they briefly appear
   if time.time() - app.speedMessageTime > 1:
     app.showSpeedMessage = False
     
@@ -636,7 +637,8 @@ def onStep(app):
         app.gameWon = True  
         updateFastestTime(app)
       return 
-
+  
+  #you get hit and lose
   if checkProjectileCollisionWithPlayer(app):
       app.gameOver = True
       app.gameWon = False  
@@ -675,7 +677,8 @@ def onStep(app):
       
       if projectile['bounces'] >= 2 or not (0 <= new_x <= app.width and 0 <= new_y <= app.height):
           app.projectiles.remove(projectile)
-
+  
+  #enemy flashes yellow then back to red when damaged
   if app.enemyHitTime and time.time() - app.enemyHitTime < 0.20:
       if int(time.time() * 10) % 0.1 == 0:  
           app.enemyHealthFlashColor = 'yellow'
@@ -687,6 +690,7 @@ def onStep(app):
       app.enemyHealthFlashColor = 'red'
       app.enemyHitTime = None
   
+  #if speed boost hit tank speed go up and boost respawn
   for boost in app.speedBoosts:
     x, y, radius = boost
     if (app.tankX + app.tankWidth / 2 - x) ** 2 + (app.tankY + app.tankHeight / 2 - y) ** 2 < (radius + app.tankWidth / 2) ** 2:
