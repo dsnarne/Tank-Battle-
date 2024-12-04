@@ -1,3 +1,5 @@
+#Dhiren Narne/dnarne/section G
+
 from cmu_graphics import *
 import levels as lv
 from PIL import Image
@@ -99,6 +101,7 @@ def onMouseMove(app, mouseX, mouseY):
         app.isControlsHovering = False
         app.controlsBoxColor = 'green'
         app.controlsTextColor = 'white'
+    
     if app.isGameStarted:
         lv.onMouseMove(app, mouseX, mouseY)
         return
@@ -107,6 +110,7 @@ def onMousePress(app, mouseX, mouseY):
     if app.isGameStarted:
             lv.onMousePress(app, mouseX, mouseY)
             return
+    
     if not app.isControlsPage:
         if (app.controlsBoxX <= mouseX <= app.controlsBoxX + app.boxWidth and
             app.controlsBoxY <= mouseY <= app.controlsBoxY + app.boxHeight):
@@ -119,6 +123,7 @@ def onKeyPress(app, key):
     if app.isGameStarted:
         lv.onKeyPress(app,key)
         return
+    
     if app.isControlsPage and key == 'escape':
         app.isControlsPage = False
 
@@ -126,7 +131,6 @@ def onKeyHold(app, keys):
     if app.isGameStarted:
         lv.onKeyHold(app,keys)
         return
-
 
 def main():
     runApp(width=750, height=500)

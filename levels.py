@@ -172,7 +172,7 @@ def drawEnemyTank2(app):
   halfHeight = app.enemyTank2Height / 2
   angle = app.enemyTank2Angle
 
-  corners = [
+  corners = [ #got math from rotation matrix formulas https://en.wikipedia.org/wiki/Rotation_matrix
   (centerX + math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
   centerY + math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
   (centerX + math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
@@ -218,7 +218,7 @@ def drawTank(app):
   halfHeight = app.tankHeight / 2
   angle = app.tankAngle
 
-  corners = [
+  corners = [ #got math from rotation matrix formulas https://en.wikipedia.org/wiki/Rotation_matrix
       (centerX + math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
         centerY + math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
       (centerX + math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
@@ -254,8 +254,8 @@ def drawCannon(app, centerX, centerY, color, isPlayer):
   startX = centerX + math.cos(angle) * app.turretRadius   #cannon connected to the circle's edge (turret center circle thing)
   startY = centerY + math.sin(angle) * app.turretRadius
 
-  corners = [
-      (startX + math.cos(angle) * app.cannonWidth - math.sin(angle) * halfHeight,   #cannon's four corners relative to rotation
+  corners = [ #got math from rotation matrix formulas https://en.wikipedia.org/wiki/Rotation_matrix
+      (startX + math.cos(angle) * app.cannonWidth - math.sin(angle) * halfHeight,   
         startY + math.sin(angle) * app.cannonWidth + math.cos(angle) * halfHeight),
       (startX + math.cos(angle) * app.cannonWidth + math.sin(angle) * halfHeight,
         startY + math.sin(angle) * app.cannonWidth - math.cos(angle) * halfHeight),
@@ -277,7 +277,7 @@ def drawEnemyTank(app):
   halfHeight = app.enemyTankHeight / 2
   angle = app.enemyTankAngle
 
-  corners = [
+  corners = [ #got math from rotation matrix formulas https://en.wikipedia.org/wiki/Rotation_matrix
     (centerX + math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
       centerY + math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
     (centerX + math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
