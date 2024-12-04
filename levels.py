@@ -124,14 +124,14 @@ def drawGame(app):
       
       if app.level == 1:
         fastest_time_text = (
-            f'Fastest Time (Level 1): {rounded(app.fastestTimeLevel1)} seconds'
-            if app.fastestTimeLevel1 is not None
-            else 'Fastest Time (Level 1): No recorded time yet.')
+          f'Fastest Time (Level 1): {rounded(app.fastestTimeLevel1)} seconds'
+          if app.fastestTimeLevel1 is not None
+          else 'Fastest Time (Level 1): No recorded time yet.')
         drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='black')
       elif app.level == 2:
         fastest_time_text = (
-            f'Fastest Time (Level 2): {rounded(app.fastestTimeLevel2)} seconds' 
-            if app.fastestTimeLevel2 is not None else 'Fastest Time (Level 2): No recorded time yet.')
+          f'Fastest Time (Level 2): {rounded(app.fastestTimeLevel2)} seconds' 
+          if app.fastestTimeLevel2 is not None else 'Fastest Time (Level 2): No recorded time yet.')
         drawLabel(fastest_time_text, app.width / 2, app.height / 2 + 40, size=20, fill='black')
         
       drawLabel(f'Press R to Restart', app.width / 2, app.height / 2, size=20, fill='red')
@@ -143,8 +143,6 @@ def drawGame(app):
     drawTank(app)
     
     drawEnemyTank(app)
-
-
     
     for boost in app.speedBoosts:
       drawCircle(boost[0], boost[1], boost[2], fill='yellow',border='black')
@@ -163,7 +161,6 @@ def drawGame(app):
     
     drawLabel(f'Red Tank Health: {app.enemyLives}', 625, 20, size =20, fill=app.enemyHealthFlashColor, bold = True)
 
-
 def drawEnemyTank2(app):
   centerX = app.enemyTank2X + app.enemyTank2Width / 2
   centerY = app.enemyTank2Y + app.enemyTank2Height / 2
@@ -180,20 +177,19 @@ def drawEnemyTank2(app):
   (centerX - math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
   centerY - math.sin(angle) * halfWidth - math.cos(angle) * halfHeight),
   (centerX - math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
-  centerY - math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
-  ]
+  centerY - math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),]
 
-  # Draw the enemy tank body as a rotated rect
+  #draw the enemy tank body as a rotated rect
   drawPolygon(corners[0][0], corners[0][1],
           corners[1][0], corners[1][1],
           corners[2][0], corners[2][1],
           corners[3][0], corners[3][1],
           fill=app.enemyTank2Color, border='black')
 
-  # Draw turret
+  #draw turret
   drawCircle(centerX, centerY, app.enemyTurretRadius, fill=app.enemyTurretColor, border='black')
 
-  # Draw enemy cannon
+  #draw enemy cannon
   drawCannon(app, centerX, centerY, 'darkblue', False)
 
 def checkSpeedBoostCollision(app):
@@ -227,8 +223,7 @@ def drawTank(app):
       (centerX - math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
         centerY - math.sin(angle) * halfWidth - math.cos(angle) * halfHeight),
       (centerX - math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
-        centerY - math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
-  ]
+        centerY - math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),]
 
   #draw tank body as a rotated rectangle
   drawPolygon(corners[0][0], corners[0][1],
@@ -263,8 +258,7 @@ def drawCannon(app, centerX, centerY, color, isPlayer):
       (startX + math.cos(angle) * app.cannonWidth + math.sin(angle) * halfHeight,
         startY + math.sin(angle) * app.cannonWidth - math.cos(angle) * halfHeight),
       (startX - math.sin(angle) * halfHeight, startY + math.cos(angle) * halfHeight),
-      (startX + math.sin(angle) * halfHeight, startY - math.cos(angle) * halfHeight)
-  ]
+      (startX + math.sin(angle) * halfHeight, startY - math.cos(angle) * halfHeight)]
   
   #draw cannon as rectangle rotated in toward cannon angle
   drawPolygon(corners[0][0], corners[0][1],
@@ -282,15 +276,14 @@ def drawEnemyTank(app):
   angle = app.enemyTankAngle
 
   corners = [
-      (centerX + math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
-        centerY + math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
-      (centerX + math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
-        centerY + math.sin(angle) * halfWidth - math.cos(angle) * halfHeight),
-      (centerX - math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
-        centerY - math.sin(angle) * halfWidth - math.cos(angle) * halfHeight),
-      (centerX - math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
-        centerY - math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
-  ]
+    (centerX + math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
+      centerY + math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
+    (centerX + math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
+      centerY + math.sin(angle) * halfWidth - math.cos(angle) * halfHeight),
+    (centerX - math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
+      centerY - math.sin(angle) * halfWidth - math.cos(angle) * halfHeight),
+    (centerX - math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
+      centerY - math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),]
 
   #draw enemy tank body as a rotated rect
   drawPolygon(corners[0][0], corners[0][1],
@@ -349,8 +342,7 @@ def checkProjectileCollisionWithPlayer(app):
   for projectile in app.projectiles:  
       if (
           app.tankX <= projectile['x'] <= app.tankX + app.tankWidth and
-          app.tankY <= projectile['y'] <= app.tankY + app.tankHeight
-      ):
+          app.tankY <= projectile['y'] <= app.tankY + app.tankHeight):
         app.enemyLives -= 1
         app.projectiles.remove(projectile)
         if app.enemyLives <= 0:
@@ -358,26 +350,6 @@ def checkProjectileCollisionWithPlayer(app):
             app.gameWon = False
         return True
   return False
-
-
-def isPlayerVisible(app):
-  enemyX = app.enemyTankX + app.enemyTankWidth / 2
-  enemyY = app.enemyTankY + app.enemyTankHeight / 2
-  playerX = app.tankX + app.tankWidth / 2
-  playerY = app.tankY + app.tankHeight / 2
-
-  for wall in app.walls:
-      wallX, wallY, wallW, wallH = wall
-
-      #check if the line between the enemy and player intersects with any wall
-      if lineIntersectsRect(enemyX, enemyY, playerX, playerY, wallX, wallY, wallW, wallH):
-          return False  #player is behind a wall
-
-  return True  #player is visible
-
-def lineIntersectsRect(x1, y1, x2, y2, rx, ry, rw, rh):
-#work in progress used to make tank shoot only when player visible
-  pass
 
 def enemyShoot(app):
   currentTime = time.time()
@@ -415,25 +387,23 @@ def enemyShoot(app):
         'isTracking': True,  #tracking behavior for the blue tank
         'source': 'enemy',
         'bounces': 0,
-        'speed': 0.1
-    })
-  else:
-      if isPlayerVisible(app):  #shoot if the player is visible
-        app.enemyLastShotTime = currentTime
-        startX = app.enemyTankX + app.enemyTankWidth / 2
-        startY = app.enemyTankY + app.enemyTankHeight / 2
-        angle = app.enemyTankAngle
+        'speed': 0.1})
+  else: 
+      app.enemyLastShotTime = currentTime
+      startX = app.enemyTankX + app.enemyTankWidth / 2
+      startY = app.enemyTankY + app.enemyTankHeight / 2
+      angle = app.enemyTankAngle
 
-        app.projectiles.append({
-            'x': startX,
-            'y': startY,
-            'radius': 5,  #small bullet for the red tank
-            'angle': angle,
-            'dx': math.cos(angle) * 10,
-            'dy': math.sin(angle) * 10,
-            'source': 'enemy',
-            'bounces': 0
-          })
+      app.projectiles.append({
+          'x': startX,
+          'y': startY,
+          'radius': 5,  #small bullet for the red tank
+          'angle': angle,
+          'dx': math.cos(angle) * 10,
+          'dy': math.sin(angle) * 10,
+          'source': 'enemy',
+          'bounces': 0
+        })
 
 def onKeyPress(app, key):
     if key == 'r':
@@ -456,21 +426,19 @@ def onKeyPress(app, key):
         app.projectiles = []
         app.startTime = time.time()  #reset the start time when continuing
         if app.level == 2:
-            app.tankX = app.width / 4
-            app.tankY = app.height / 2
-            app.enemyTankX = app.width * 3 / 4
-            app.enemyTankY = app.height / 2
-            app.enemyTankSpeed += 0.5  #increase speed for the second level
-            app.enemyTank2X = app.width * 3 / 4
-            app.enemyTank2Y = app.height / 4 
-            app.enemyTank2Width = 50
-            app.enemyTank2Height = 40
-            app.enemyTank2Color = 'blue' 
-            app.enemyTank2Speed = 1  
-            app.enemyTank2Angle = 0
-            app.enemyTank2Lives = 3
-                    
-  
+          app.tankX = app.width / 4
+          app.tankY = app.height / 2
+          app.enemyTankX = app.width * 3 / 4
+          app.enemyTankY = app.height / 2
+          app.enemyTankSpeed += 0.5  #increase speed for the second level
+          app.enemyTank2X = app.width * 3 / 4
+          app.enemyTank2Y = app.height / 4 
+          app.enemyTank2Width = 50
+          app.enemyTank2Height = 40
+          app.enemyTank2Color = 'blue' 
+          app.enemyTank2Speed = 1  
+          app.enemyTank2Angle = 0
+          app.enemyTank2Lives = 3
 
 def onKeyHold(app, keys):
   dx, dy = 0, 0
@@ -580,12 +548,13 @@ def checkProjectileCollisionWithEnemy(app):
         app.projectiles.remove(projectile)
 
         app.enemyHitTime = time.time()  # record the time of the hit
-        app.enemyHealthFlashColor = 'yellow'  # change the color to red for the flash effect
+        app.enemyHealthFlashColor = 'yellow'  #change the color to red for the flash effect
 
         if app.enemyLives <= 0:
             app.gameOver = True
             app.gameWon = True  
         return True
+      
       enemy2CenterX = app.enemyTank2X + app.enemyTank2Width / 2
       enemy2CenterY = app.enemyTank2Y + app.enemyTank2Height / 2
       if (enemy2CenterX - app.enemyTank2Width / 2 <= projectile['x'] <= enemy2CenterX + app.enemyTank2Width / 2 and
@@ -618,22 +587,19 @@ def onMousePress(app, mouseX, mouseY):
         level1_button_y = app.height / 2
         level1_button_width = 200
         level1_button_height = 50
-        # Check if mouse is within the bounds of Level 1 button
+
         if (level1_button_x <= mouseX <= level1_button_x + level1_button_width and
             level1_button_y <= mouseY <= level1_button_y + level1_button_height):
-            app.levelSelect = False  # Hide the level select screen
-            app.level = 1  # Set the level to 1
+            app.levelSelect = False  #hide the level select screen
+            app.level = 1 
 
         level2_button_x = app.width * 3 / 4 - 100
         level2_button_y = app.height / 2
-        # Check if mouse is within the bounds of Level 2 button
+        
         if (level2_button_x <= mouseX <= level2_button_x + level1_button_width and
             level2_button_y <= mouseY <= level2_button_y + level1_button_height):
-            app.levelSelect = False  # Hide the level select screen
-            app.level = 2  # Set the level to 2
-
-  
-
+            app.levelSelect = False  #hide the level select screen
+            app.level = 2  
 
 def onStep(app):
   if app.gameOver:
@@ -649,15 +615,20 @@ def onStep(app):
         return
       
   moveEnemyTank(app)
+  
   enemyShoot(app)
+  
   checkSpeedBoostCollision(app)
+  
   if checkTankCollisionWithPlayer(app):
       app.gameOver = True
       app.gameWon = False 
       updateFastestTime(app)
       return  
+    
   if time.time() - app.speedMessageTime > 1:
     app.showSpeedMessage = False
+    
   #check if the player's projectile hits the enemy tank
   if checkProjectileCollisionWithEnemy(app):
       if app.enemyLives <= 0:
@@ -743,13 +714,14 @@ def drawLevelSelectScreen(app):
   level1_button_y = app.height / 2
   level1_button_width = 200
   level1_button_height = 50
+  
   drawRect(level1_button_x, level1_button_y, level1_button_width, level1_button_height, fill='lightblue', border='black')
   drawLabel('Level 1', level1_button_x + level1_button_width / 2, level1_button_y + level1_button_height / 2, size=20, bold=True)
 
   level2_button_x = app.width * 3 / 4 - 100
   level2_button_y = app.height / 2
+  
   drawRect(level2_button_x, level2_button_y, level1_button_width, level1_button_height, fill='lightgreen', border='black')
   drawLabel('Level 2', level2_button_x + level1_button_width / 2, level2_button_y + level1_button_height / 2, size=20, bold=True)
-  
   drawLabel('Click on a level to start', app.width / 2, app.height / 2 + 100, size=20, fill='Black')
 
