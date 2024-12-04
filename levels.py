@@ -84,8 +84,8 @@ def restartApp(app):
   
   app.speedBoosts = []
   for i in range(5):  #create 5 random yellow circles "powerups"
-      x = np.random.randint(50, app.width - 50)
-      y = np.random.randint(50, app.width - 50)
+      x = np.random.randint(50, 750)
+      y = np.random.randint(50, 350)
       radius = 15
       app.speedBoosts.append([x, y, radius])
   app.showSpeedMessage = False
@@ -705,8 +705,8 @@ def onStep(app):
     x, y, radius = boost
     if (app.tankX + app.tankWidth / 2 - x) ** 2 + (app.tankY + app.tankHeight / 2 - y) ** 2 < (radius + app.tankWidth / 2) ** 2:
       app.tankSpeed += 2  #increase speed
-      newX = np.random.randint(50, 301)
-      newY = np.random.randint(50, 301)
+      newX = np.random.randint(50, 750)
+      newY = np.random.randint(50, 350)
       boost[0] = newX
       boost[1] = newY
 
