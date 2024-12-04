@@ -569,23 +569,38 @@ def checkTankCollisionWithPlayer(app):
 
 def checkProjectileCollisionWithEnemy(app):
   for projectile in app.projectiles:  
-      if projectile['source'] == 'player':  # check player's projectiles
-          enemyCenterX = app.enemyTankX + app.enemyTankWidth / 2
-          enemyCenterY = app.enemyTankY + app.enemyTankHeight / 2
+    if projectile['source'] == 'player':  # check player's projectiles
+      enemyCenterX = app.enemyTankX + app.enemyTankWidth / 2
+      enemyCenterY = app.enemyTankY + app.enemyTankHeight / 2
 
-          if (enemyCenterX - app.enemyTankWidth / 2 <= projectile['x'] <= enemyCenterX + app.enemyTankWidth / 2 and
-              enemyCenterY - app.enemyTankHeight / 2 <= projectile['y'] <= enemyCenterY + app.enemyTankHeight / 2):
+      if (enemyCenterX - app.enemyTankWidth / 2 <= projectile['x'] <= enemyCenterX + app.enemyTankWidth / 2 and
+        enemyCenterY - app.enemyTankHeight / 2 <= projectile['y'] <= enemyCenterY + app.enemyTankHeight / 2):
 
-              app.enemyLives -= 1
-              app.projectiles.remove(projectile)
+        app.enemyLives -= 1
+        app.projectiles.remove(projectile)
 
-              app.enemyHitTime = time.time()  # record the time of the hit
-              app.enemyHealthFlashColor = 'yellow'  # change the color to red for the flash effect
+        app.enemyHitTime = time.time()  # record the time of the hit
+        app.enemyHealthFlashColor = 'yellow'  # change the color to red for the flash effect
 
-              if app.enemyLives <= 0:
-                  app.gameOver = True
-                  app.gameWon = True  
-              return True
+        if app.enemyLives <= 0:
+            app.gameOver = True
+            app.gameWon = True  
+        return True
+      enemy2CenterX = app.enemyTank2X + app.enemyTank2Width / 2
+      enemy2CenterY = app.enemyTank2Y + app.enemyTank2Height / 2
+      if (enemy2CenterX - app.enemyTank2Width / 2 <= projectile['x'] <= enemy2CenterX + app.enemyTank2Width / 2 and
+          enemy2CenterY - app.enemyTank2Height / 2 <= projectile['y'] <= enemy2CenterY + app.enemyTank2Height / 2):
+
+          app.enemyTank2Lives -= 1
+          app.projectiles.remove(projectile)
+
+          app.enemyTank2HitTime = time.time()  # Record the time of the hit
+          app.enemyTank2HealthFlashColor = 'yellow'  # Flash color effect
+
+          if app.enemyTank2Lives <= 2:
+            app.enemyTank2X = -100  # Move it off-screen (or flag it for removal)
+            app.enemyTank2Y = -100
+          return True
   return False
 
 def onMouseMove(app, mouseX, mouseY):
