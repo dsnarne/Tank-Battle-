@@ -30,8 +30,6 @@ def onAppStart(app):
 
     app.isFlickerVisible = True  
     app.flickerTimer = 0
-    
-    app.screen = 'ui'  
     app.isGameStarted = False
     lv.onAppStart(app)
 
@@ -46,9 +44,9 @@ def redrawAll(app):
         #Draw the Controls page
         drawRect(0, 0, app.width, app.height, fill='white')  # Blank background
         drawLabel('CONTROLS', app.width / 2, 50, size=45, bold=True, fill='black')
-        drawLabel('1. Use WASD to move.', app.width / 2, 150, size=30, fill='black')
+        drawLabel('1. Use WASD to move and collect yellow speed boosts!.', app.width / 2, 150, size=30, fill='black')
         drawLabel('2. Aim your mouse and press space to shoot.', app.width / 2, 200, size=30, fill='black')
-        drawLabel('3. Avoid enemy tanks and destroy the red tank!', app.width / 2, 250, size=30, fill='black')
+        drawLabel('3. Avoid immortal blue enemy tanks and destroy the red tank!', app.width / 2, 250, size=30, fill='black')
         drawLabel('Press ESC to return to the main menu.', app.width / 2, 350, size=20, fill='red')
     else:
         drawLabel('Tank Battle!!!', app.width / 2, 100, size=100, bold=True, fill='black')
