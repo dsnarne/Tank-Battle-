@@ -1,3 +1,5 @@
+#Dhiren Narne/dnarne/section G
+
 import math
 import time 
 from cmu_graphics import *
@@ -84,8 +86,8 @@ def restartApp(app):
   
   app.speedBoosts = []
   for i in range(5):  #create 5 random yellow circles "powerups"
-      x = np.random.randint(50, 750)
-      y = np.random.randint(50, 350)
+      x = np.random.randint(50, 750) #range x with power ups a bit away from start (couldn't put in app.length as numpy)
+      y = np.random.randint(50, 350) #range of y with power ups a bit away start (couldn't put in app.width as numpy)
       radius = 15
       app.speedBoosts.append([x, y, radius])
   app.showSpeedMessage = False
@@ -97,7 +99,7 @@ def drawGame(app):
   if app.levelSelect:
     drawLevelSelectScreen(app)
     
-    if app.fastestTimeLevel1 is not None:
+    if app.fastestTimeLevel1 is not None: 
         fastestTimeLevel1Text = f'Fastest Time (Level 1): {rounded(app.fastestTimeLevel1)} seconds'
     else:
         fastestTimeLevel1Text = 'Fastest Time (Level 1): No recorded time yet.'
