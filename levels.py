@@ -1,8 +1,8 @@
 import math
-import random
 import time 
 from cmu_graphics import *
 from PIL import Image
+import numpy as np
 
 def onAppStart(app):
   app.width = 750
@@ -81,7 +81,17 @@ def restartApp(app):
   app.enemyHitDuration = 0.5
   app.enemyHealthFlashColor = 'red'
   app.levelSelect = True
-    
+  
+  app.speedBoosts = []
+  for i in range(5):  #create 5 random yellow circles "powerups"
+      x = np.random.randint(50, app.width - 50)
+      y = np.random.randint(50, app.width - 50)
+      radius = 15
+      app.speedBoosts.append([x, y, radius])
+  app.showSpeedMessage = False
+  app.speedMessageTime = 0
+  
+  
 def drawGame(app):
   drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height)
   if app.levelSelect:
@@ -98,16 +108,8 @@ def drawGame(app):
         fastestTimeLevel2Text = 'Fastest Time (Level 2): No recorded time yet.'
     drawLabel(fastestTimeLevel1Text, app.width / 2, app.height / 2 - 90, size=20, fill='red')
     drawLabel(fastestTimeLevel2Text, app.width / 2, app.height / 2 - 60, size=20, fill='red')
-    
-    
-    
-    
-    
-    
-    
-    
-    
     return
+  
   else:  
     if app.gameOver:
       if app.gameWon:
@@ -142,12 +144,21 @@ def drawGame(app):
     
     drawEnemyTank(app)
 
+
+    
+    for boost in app.speedBoosts:
+      drawCircle(boost[0], boost[1], boost[2], fill='yellow',border='black')
+    
     for projectile in app.projectiles:
         drawCircle(projectile['x'], projectile['y'], projectile['radius'], fill='black')
 
     for wall in app.walls:
         drawRect(wall[0], wall[1], wall[2], wall[3], fill='bisque', border='burlyWood', borderWidth=3)
-
+    
+    if app.showSpeedMessage:
+      drawLabel('+speed', app.tankX, app.tankY -20, size = 20, fill ='black')
+      
+    
     drawCircle(app.mouseX, app.mouseY, app.recticleRadius, fill='red')
     
     drawLabel(f'Red Tank Health: {app.enemyLives}', 625, 20, size =20, fill=app.enemyHealthFlashColor, bold = True)
@@ -184,6 +195,20 @@ def drawEnemyTank2(app):
 
   # Draw enemy cannon
   drawCannon(app, centerX, centerY, 'darkblue', False)
+
+def checkSpeedBoostCollision(app):
+  tankCenterX = app.tankX + app.tankWidth / 2
+  tankCenterY = app.tankY + app.tankHeight /2 
+  tankRadius = app.tankWidth / 2
+  
+  for boost in app.speedBoosts:
+    boostX, boostY, boostRadius = boost
+    distance = math.sqrt((tankCenterX - boostX) ** 2 + (tankCenterY - boostY) ** 2)
+    if distance < (tankRadius + boostRadius):
+      app.speedBoosts.remove(boost)
+      app.tankSpeed += 1
+      app.showSpeedMessage = True
+      app.speedMessageTime = time.time()
 
 def drawTank(app):
   centerX = app.tankX + app.tankWidth / 2
@@ -610,13 +635,14 @@ def onStep(app):
       
   moveEnemyTank(app)
   enemyShoot(app)
-
+  checkSpeedBoostCollision(app)
   if checkTankCollisionWithPlayer(app):
       app.gameOver = True
       app.gameWon = False 
       updateFastestTime(app)
       return  
-
+  if time.time() - app.speedMessageTime > 1:
+    app.showSpeedMessage = False
   #check if the player's projectile hits the enemy tank
   if checkProjectileCollisionWithEnemy(app):
       if app.enemyLives <= 0:
@@ -674,7 +700,16 @@ def onStep(app):
 
       app.enemyHealthFlashColor = 'red'
       app.enemyHitTime = None
-      
+  
+  for boost in app.speedBoosts:
+    x, y, radius = boost
+    if (app.tankX + app.tankWidth / 2 - x) ** 2 + (app.tankY + app.tankHeight / 2 - y) ** 2 < (radius + app.tankWidth / 2) ** 2:
+      app.tankSpeed += 2  #increase speed
+      newX = np.random.randint(50, 301)
+      newY = np.random.randint(50, 301)
+      boost[0] = newX
+      boost[1] = newY
+
 def updateFastestTime(app):
   elapsedTime = time.time() - app.startTime
   if app.level == 1:
