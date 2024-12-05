@@ -251,7 +251,7 @@ def drawCannon(app, centerX, centerY, color, isPlayer):
       angle = math.atan2(dy, dx)  #calc angle to the player tank
       halfHeight = app.cannonHeight / 2
 
-  startX = centerX + math.cos(angle) * app.turretRadius   #cannon connected to the circle's edge (turret center circle thing)
+  startX = centerX + math.cos(angle) * app.turretRadius  #cannon connected to the circle's edge (turret center circle thing)
   startY = centerY + math.sin(angle) * app.turretRadius
 
   corners = [ #got math from rotation matrix formulas https://en.wikipedia.org/wiki/Rotation_matrix
@@ -567,7 +567,7 @@ def checkProjectileCollisionWithEnemy(app):
           app.enemyTank2HealthFlashColor = 'yellow'  # Flash color effect
 
           if app.enemyTank2Lives <= 2:
-            app.enemyTank2X = -100  # Move it off-screen (or flag it for removal)
+            app.enemyTank2X = -100  #move it off-screen (or flag it for removal)
             app.enemyTank2Y = -100
           return True
   return False

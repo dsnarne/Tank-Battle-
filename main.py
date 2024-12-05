@@ -110,7 +110,6 @@ def onMousePress(app, mouseX, mouseY):
     if app.isGameStarted:
             lv.onMousePress(app, mouseX, mouseY)
             return
-    
     if not app.isControlsPage:
         if (app.controlsBoxX <= mouseX <= app.controlsBoxX + app.boxWidth and
             app.controlsBoxY <= mouseY <= app.controlsBoxY + app.boxHeight):
