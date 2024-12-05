@@ -277,7 +277,7 @@ def drawEnemyTank(app):
   halfHeight = app.enemyTankHeight / 2
   angle = app.enemyTankAngle
 
-  corners = [ #got math from rotation matrix formulas https://en.wikipedia.org/wiki/Rotation_matrix
+  corners = [
     (centerX + math.cos(angle) * halfWidth - math.sin(angle) * halfHeight,
       centerY + math.sin(angle) * halfWidth + math.cos(angle) * halfHeight),
     (centerX + math.cos(angle) * halfWidth + math.sin(angle) * halfHeight,
@@ -342,8 +342,7 @@ def checkTankCollision(app, newX, newY, tankWidth, tankHeight):
 
 def checkProjectileCollisionWithPlayer(app):
   for projectile in app.projectiles:  
-      if (
-          app.tankX <= projectile['x'] <= app.tankX + app.tankWidth and
+      if (app.tankX <= projectile['x'] <= app.tankX + app.tankWidth and
           app.tankY <= projectile['y'] <= app.tankY + app.tankHeight):
         app.enemyLives -= 1
         app.projectiles.remove(projectile)
