@@ -408,16 +408,16 @@ def enemyShoot(app):
 
 def onKeyPress(app, key):
     if key == 'r':
-      if app.gameOver:
-        elapsedTime = time.time() - app.startTime
+      if app.gameWon:
+        if app.gameOver:
+          elapsedTime = time.time() - app.startTime
+          if app.level == 1:
+            if app.fastestTimeLevel1 is None or elapsedTime < app.fastestTimeLevel1:
+              app.fastestTimeLevel1 = elapsedTime
+          elif app.level == 2:
+            if app.fastestTimeLevel2 is None or elapsedTime < app.fastestTimeLevel2:
+              app.fastestTimeLevel2 = elapsedTime
         
-        if app.level == 1:
-          if app.fastestTimeLevel1 is None or elapsedTime < app.fastestTimeLevel1:
-            app.fastestTimeLevel1 = elapsedTime
-        elif app.level == 2:
-          if app.fastestTimeLevel2 is None or elapsedTime < app.fastestTimeLevel2:
-            app.fastestTimeLevel2 = elapsedTime
-      
       restartApp(app)
       
     elif key == 'c':  
@@ -500,8 +500,7 @@ def spawnProjectile(app):
       'dx': math.cos(angle) * 10,  
       'dy': math.sin(angle) * 10,
       'bounces': 0,
-      'source': 'player'  #player projectile
-  })
+      'source': 'player'}) #player projectile
 
 def moveTrackingProjectile(app, projectile):
    if projectile['isTracking']: 
@@ -702,13 +701,14 @@ def onStep(app):
       boost[1] = newY
 
 def updateFastestTime(app):
-  elapsedTime = time.time() - app.startTime
-  if app.level == 1:
-    if app.fastestTimeLevel1 is None or elapsedTime < app.fastestTimeLevel1:
-        app.fastestTimeLevel1 = elapsedTime
-  elif app.level == 2:
-    if app.fastestTimeLevel2 is None or elapsedTime < app.fastestTimeLevel2:
-        app.fastestTimeLevel2 = elapsedTime
+  if app.gameWon:  
+    elapsedTime = time.time() - app.startTime
+    if app.level == 1:
+      if app.fastestTimeLevel1 is None or elapsedTime < app.fastestTimeLevel1:
+          app.fastestTimeLevel1 = elapsedTime
+    elif app.level == 2:
+      if app.fastestTimeLevel2 is None or elapsedTime < app.fastestTimeLevel2:
+          app.fastestTimeLevel2 = elapsedTime
 
 def drawLevelSelectScreen(app):
   drawImage(app.backgroundImagePath, 0, 0, width=app.width, height=app.height)
@@ -729,4 +729,3 @@ def drawLevelSelectScreen(app):
   drawRect(level2_button_x, level2_button_y, level1_button_width, level1_button_height, fill='lightgreen', border='black')
   drawLabel('Level 2', level2_button_x + level1_button_width / 2, level2_button_y + level1_button_height / 2, size=20, bold=True)
   drawLabel('Click on a level to start', app.width / 2, app.height / 2 + 100, size=20, fill='Black')
-
