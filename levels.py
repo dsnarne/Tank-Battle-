@@ -9,7 +9,7 @@ import numpy as np
 def onAppStart(app):
   app.width = 750
   app.height = 500
-  app.backgroundImagePath = Image.open("Images/background.jpeg")
+  app.backgroundImagePath = Image.open("Images/background.jpeg") #picture source: https://www.freepik.com/premium-ai-image/anigre-wood-displaying-pale-yellow-color-straight-consistent-grain-wood-texture_68093310.htm
   app.backgroundImagePath = CMUImage(app.backgroundImagePath)
   
   app.gameOver = False
@@ -386,7 +386,7 @@ def enemyShoot(app):
         'angle': angle2,
         'dx': 0,
         'dy': 0,
-        'isTracking': True,  #tracking behavior for the blue tank
+        'isTracking': True,  
         'source': 'enemy',
         'bounces': 0,
         'speed': 0.1})
