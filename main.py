@@ -27,7 +27,7 @@ def onAppStart(app):
     
     app.isControlsPage = False
     
-    app.backgroundImagePath = Image.open("Images/background.jpeg") #picture source https://www.freepik.com/premium-ai-image/anigre-wood-displaying-pale-yellow-color-straight-consistent-grain-wood-texture_68093310.htm
+    app.backgroundImagePath = Image.open("background.jpeg") #picture source https://www.freepik.com/premium-ai-image/anigre-wood-displaying-pale-yellow-color-straight-consistent-grain-wood-texture_68093310.htm
     app.backgroundImagePath = CMUImage(app.backgroundImagePath)
 
     app.isFlickerVisible = True  

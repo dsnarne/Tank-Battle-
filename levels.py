@@ -9,7 +9,7 @@ import numpy as np
 def onAppStart(app):
   app.width = 750
   app.height = 500
-  app.backgroundImagePath = Image.open("Images/background.jpeg") #picture source: https://www.freepik.com/premium-ai-image/anigre-wood-displaying-pale-yellow-color-straight-consistent-grain-wood-texture_68093310.htm
+  app.backgroundImagePath = Image.open("background.jpeg") #picture source: https://www.freepik.com/premium-ai-image/anigre-wood-displaying-pale-yellow-color-straight-consistent-grain-wood-texture_68093310.htm
   app.backgroundImagePath = CMUImage(app.backgroundImagePath)
   
   app.gameOver = False
