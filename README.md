@@ -6,9 +6,7 @@ Tank Battle is a game where players control a small tank from a top-down perspec
 
 ---
 
-## Run Instructions
-
-### Dependencies
+## Dependencies
 
 Before running the game, ensure the following Python modules are installed:
 
