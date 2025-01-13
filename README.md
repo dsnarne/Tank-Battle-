@@ -13,11 +13,11 @@ Before running the game, ensure the following Python modules are installed:
 1. **Pillow (PIL)**:  
    Pillow is used for image processing in the game. Install it with:  
    ```bash
-   pip3 install pillow
+   pip install pillow
 2. **Numpy**:  
    NumPy is used for numerical computations required by the game logic. Install it with:  
    ```bash
-   pip3 install numpy
+   pip install numpy
    
 3. **CMU Graphics**:  
    CMU Graphics is used to create the visual elements of the game and is found in the repo.
